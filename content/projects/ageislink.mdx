@@ -1,0 +1,37 @@
+---
+title: "AgeisLink"
+slug: "ageislink"
+description: "Two-wheeler crash detection system using ESP32 and MPU6050, with automated SMS-based SOS and GPS geofencing — built for zero-internet-dependency operation on rural highways."
+coverImage: "/images/projects/ageislink-cover.png"
+techStack: ["ESP32", "MPU6050", "BLE", "Flutter", "GPS"]
+githubUrl: "https://github.com/dhineshkarthick16/AgeisLink"
+status: "In Progress"
+---
+
+## Overview
+
+AgeisLink is a crash detection system for two-wheelers, designed for highway scenarios where internet connectivity can't be assumed. The core detection and processing happens entirely on-device, with dispatch (SMS, GSM, or LoRa) treated as a modular, swappable layer on top.
+
+## Problem Statement
+
+Existing crash-detection solutions for two-wheelers typically depend on cloud connectivity for classification and alerting. In rural and highway contexts — where network coverage is unreliable — this creates a critical single point of failure exactly when the system matters most.
+
+## System Architecture
+
+The signal chain runs ESP32 + MPU6050 for accelerometer/gyroscope sensing, communicating over BLE to a companion Flutter app, which handles SOS dispatch and GPS-based geofencing.
+
+## Challenges
+
+One major issue was a BLE protocol mismatch — the firmware sent a one-shot `"CRASH"` string while the app expected structured CSV telemetry. This was resolved by aligning both sides on a consistent packet format.
+
+The original plan used an Edge Impulse model for crash classification, but model availability constraints led to a pivot toward a threshold-based detection approach using accelerometer/gyroscope magnitude thresholds — currently flagged for further calibration.
+
+## Learnings
+
+Building for zero-connectivity environments forces a different architecture than typical IoT projects — every dependency on an external service becomes a potential failure point that needs a local fallback.
+
+## Future Improvements
+
+- Calibrate threshold-based detection against a larger real-world dataset
+- Reintroduce a trained classifier once a suitable one is available
+- Expand dispatch layer to support LoRa for areas without any cellular coverage
