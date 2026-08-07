@@ -8,6 +8,9 @@ import { Skills } from "@/components/sections/Skills";
 import { Projects } from "@/components/sections/Projects";
 import { Experience } from "@/components/sections/Experience";
 import { Achievements } from "@/components/sections/Achievements";
+import { KnowledgeHubPreview } from "@/components/sections/KnowledgeHubPreview";
+import { Resume } from "@/components/sections/Resume";
+import { Contact } from "@/components/sections/Contact";
 
 export default function Home() {
   return (
@@ -22,7 +25,9 @@ export default function Home() {
         <Projects />
         <Experience />
         <Achievements />
-        {/* Next: Knowledge Hub, Resume, Contact */}
+        <KnowledgeHubPreview />
+        <Resume />
+        <Contact />
       </main>
       <Footer />
     </>

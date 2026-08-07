@@ -3,7 +3,7 @@ export const siteConfig = {
   role: "Electronics & Communication Engineering Student",
   tagline: "VLSI • Embedded Systems • AI • IoT",
   intro: "Building intelligent hardware and software solutions.",
-  email: "dhineshkarthick16@gmail.com",
+  email: "dhineshkarthick169@gmail.com",
   links: {
     github: "https://github.com/dhineshkarthick16",
     linkedin: "https://linkedin.com/in/dhineshkarthick16",
