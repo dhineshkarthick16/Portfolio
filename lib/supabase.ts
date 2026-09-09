@@ -1,6 +1,14 @@
 import { achievements as fallbackAchievements } from "@/data/achievements";
 import { Achievement } from "@/types";
 
+export interface RoundRow {
+  id: string;
+  name?: string;
+  date?: string | null;
+  status?: string | null;
+  round_order?: number | null;
+}
+
 export interface CompetitionRow {
   id: string;
   name: string;
@@ -10,125 +18,166 @@ export interface CompetitionRow {
   position?: string | null;
   prize?: string | null;
   result_notes?: string | null;
-  featured_on_portfolio?: boolean;
   created_at?: string;
+  registration_deadline?: string | null;
+  rounds?: RoundRow[];
 }
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+export const QUALIFYING_RESULTS = [
+  "Winner",
+  "Won",
+  "Runner-up",
+  "Finalist",
+  "Shortlisted",
+] as const;
+
+function formatMonthYear(dateStr?: string | null): string | undefined {
+  if (!dateStr) return undefined;
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return undefined;
+    return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  } catch {
+    return undefined;
+  }
+}
+
+export function getResultRank(resultStr?: string): number {
+  if (!resultStr) return 99;
+  const lower = resultStr.toLowerCase();
+  if (lower.includes("winner") || lower.includes("won")) return 1;
+  if (lower.includes("runner-up") || lower.includes("runner up")) return 2;
+  if (lower.includes("finalist")) return 3;
+  if (lower.includes("shortlisted")) return 4;
+  return 5;
+}
 
 /**
- * Public: Fetch featured competitions from HackTracker Supabase database.
- * Falls back to static `data/achievements.ts` if Supabase is unconfigured or unavailable.
+ * Known completion/event dates for competitions where rounds data might not yet be
+ * populated or accessible via RLS in Supabase.
+ * Extracted directly from HackTracker competition history.
  */
-export async function getFeaturedAchievements(): Promise<Achievement[]> {
+const KNOWN_EVENT_DATES: Record<string, string> = {
+  "geonex": "2026-03-15T06:30:00.000Z", // Final Round - Offline Hackathon (March 2026)
+  "h@cit": "2026-03-13T06:30:00.000Z", // Round 1 — Idea Submission (March 2026)
+  "apathon": "2026-02-16T06:30:00.000Z", // Round 1 — Idea Submission (February 2026)
+  "hackfusion": "2026-08-07T06:30:00.000Z", // Top 50 Finals Offline at Erode (August 2026)
+  "iitm i2i": "2026-08-20T06:30:00.000Z", // BootCamp / i2I (August 2026)
+  "innovation unbounds": "2026-09-03T06:30:00.000Z", // 24 hour hackathon (September 2026)
+  "aicci": "2026-08-20T06:30:00.000Z", // Finals at Thoothukudi (August 2026)
+  "devjams": "2026-08-29T06:30:00.000Z", // 3 day Hackathon (August 2026)
+  "deepsprint": "2026-09-01T06:30:00.000Z", // 24 hour Hackathon (September 2026)
+};
+
+/**
+ * Extracts the effective event completion date for a competition.
+ * Prioritizes the latest date from the competition rounds (culmination / finale date),
+ * then registration deadline, then known historical event dates.
+ * Does NOT fall back to created_at because that is the row creation timestamp, not the event date.
+ */
+export function getCompetitionEventDate(comp: CompetitionRow): string | undefined {
+  // 1. Highest priority: real dates from rounds table in Supabase
+  const roundDates = (comp.rounds || [])
+    .filter((r) => r.date)
+    .map((r) => ({
+      raw: r.date!,
+      time: new Date(r.date!).getTime(),
+    }))
+    .filter((item) => !isNaN(item.time));
+
+  if (roundDates.length > 0) {
+    roundDates.sort((a, b) => b.time - a.time);
+    return roundDates[0].raw;
+  }
+
+  // 2. Next priority: registration deadline if available
+  if (comp.registration_deadline) {
+    return comp.registration_deadline;
+  }
+
+  // 3. Known historical event dates lookup (ensures older hackathons like GeoNex in March 2026 sort accurately)
+  const nameLower = comp.name.toLowerCase();
+  for (const [key, dateStr] of Object.entries(KNOWN_EVENT_DATES)) {
+    if (nameLower.includes(key)) {
+      return dateStr;
+    }
+  }
+
+  return undefined;
+}
+
+export function sortAchievements(items: Achievement[]): Achievement[] {
+  return [...items].sort((a, b) => {
+    const rankA = getResultRank(a.rawResult || a.result);
+    const rankB = getResultRank(b.rawResult || b.result);
+    if (rankA !== rankB) {
+      return rankA - rankB;
+    }
+    const timeA = a.rawDate ? new Date(a.rawDate).getTime() : 0;
+    const timeB = b.rawDate ? new Date(b.rawDate).getTime() : 0;
+    return timeB - timeA;
+  });
+}
+
+/**
+ * Public: Fetch qualifying competitions (Winner, Won, Runner-up, Finalist, Shortlisted)
+ * directly from HackTracker Supabase database using read-only anon key.
+ * Joins `rounds` to retrieve real event completion dates.
+ * Falls back to static `data/achievements.ts` if Supabase is unconfigured, empty, or unavailable.
+ */
+export async function getQualifyingAchievements(): Promise<Achievement[]> {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    return fallbackAchievements;
+    return sortAchievements(fallbackAchievements);
   }
 
   try {
+    const filterValues = QUALIFYING_RESULTS.join(",");
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/competitions?featured_on_portfolio=eq.true&select=id,name,organizer,result,position,prize&order=created_at.desc`,
+      `${SUPABASE_URL}/rest/v1/competitions?result=in.(${filterValues})&select=id,name,organizer,result,position,prize,created_at,registration_deadline,rounds(id,name,date,round_order,status)`,
       {
         headers: {
           apikey: SUPABASE_ANON_KEY,
           Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         },
-        next: { revalidate: 60 }, // ISR cache for 60s
+        cache: "no-store", // Avoid caching so updates show immediately on reload without redeploy
       }
     );
 
     if (!res.ok) {
       console.warn("Supabase competitions fetch returned non-200, falling back to static data.");
-      return fallbackAchievements;
+      return sortAchievements(fallbackAchievements);
     }
 
     const data: CompetitionRow[] = await res.json();
     if (!Array.isArray(data) || data.length === 0) {
-      return fallbackAchievements;
+      return sortAchievements(fallbackAchievements);
     }
 
-    return data.map((comp) => ({
-      id: comp.id,
-      title: comp.name,
-      organization: comp.organizer,
-      result: comp.position ? `${comp.position} (${comp.result})` : comp.result,
-    }));
-  } catch (err) {
-    console.warn("Failed to fetch featured achievements from Supabase:", err);
-    return fallbackAchievements;
-  }
-}
+    const mapped: Achievement[] = data.map((comp) => {
+      const dateValue = getCompetitionEventDate(comp);
+      return {
+        id: comp.id,
+        title: comp.name,
+        organization: comp.organizer,
+        result: comp.position ? `${comp.position} (${comp.result})` : comp.result,
+        rawResult: comp.result,
+        date: formatMonthYear(dateValue),
+        rawDate: dateValue || undefined,
+      };
+    });
 
-/**
- * Admin: Verify if an admin cookie or session token is valid
- */
-export function verifyAdminToken(token: string | undefined): boolean {
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminPassword) return false;
-  // A simple deterministic token derived from ADMIN_PASSWORD
-  const expectedToken = Buffer.from(`admin:${adminPassword}`).toString("base64");
-  return token === expectedToken;
-}
-
-export function generateAdminToken(): string {
-  const adminPassword = process.env.ADMIN_PASSWORD || "admin";
-  return Buffer.from(`admin:${adminPassword}`).toString("base64");
-}
-
-/**
- * Admin: Fetch all competitions from HackTracker
- */
-export async function getAllCompetitionsAdmin(): Promise<CompetitionRow[]> {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("Supabase service role key is not configured in .env.local");
-  }
-
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/competitions?select=id,name,organizer,status,result,position,prize,featured_on_portfolio,created_at&order=created_at.desc`,
-    {
-      headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      },
-      cache: "no-store",
+    return sortAchievements(mapped);
+  } catch (err: any) {
+    if (err?.digest === "DYNAMIC_SERVER_USAGE") {
+      throw err;
     }
-  );
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Supabase query failed (${res.status}): ${errorText}`);
+    console.warn("Failed to fetch qualifying achievements from Supabase:", err);
+    return sortAchievements(fallbackAchievements);
   }
-
-  return res.json();
 }
 
-/**
- * Admin: Toggle `featured_on_portfolio` status for a competition
- */
-export async function toggleCompetitionFeatured(id: string, featured: boolean): Promise<boolean> {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("Supabase service role key is not configured in .env.local");
-  }
-
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/competitions?id=eq.${encodeURIComponent(id)}`, {
-    method: "PATCH",
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      "Content-Type": "application/json",
-      Prefer: "return=representation",
-    },
-    body: JSON.stringify({
-      featured_on_portfolio: featured,
-    }),
-  });
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Failed to update competition (${res.status}): ${errorText}`);
-  }
-
-  return true;
-}
+// Alias for backwards compatibility
+export const getFeaturedAchievements = getQualifyingAchievements;

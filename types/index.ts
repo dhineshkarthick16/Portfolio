@@ -29,6 +29,9 @@ export interface Achievement {
   organization: string;
   result: string;
   id?: string;
+  date?: string;
+  rawResult?: string;
+  rawDate?: string;
 }
 
 export interface SkillCategory {

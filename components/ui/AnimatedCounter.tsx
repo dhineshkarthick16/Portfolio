@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { useInView, useMotionValue, useSpring } from "framer-motion";
 
 interface AnimatedCounterProps {
   value: number;
@@ -9,11 +9,11 @@ interface AnimatedCounterProps {
 }
 
 export function AnimatedCounter({ value, suffix = "" }: AnimatedCounterProps) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const containerRef = useRef<HTMLSpanElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
   const motionValue = useMotionValue(0);
   const springValue = useSpring(motionValue, { duration: 1500, bounce: 0 });
-  const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
     if (isInView) {
@@ -23,15 +23,16 @@ export function AnimatedCounter({ value, suffix = "" }: AnimatedCounterProps) {
 
   useEffect(() => {
     const unsubscribe = springValue.on("change", (latest) => {
-      setDisplayValue(Math.floor(latest));
+      if (textRef.current) {
+        textRef.current.textContent = `${Math.floor(latest)}${suffix}`;
+      }
     });
     return () => unsubscribe();
-  }, [springValue]);
+  }, [springValue, suffix]);
 
   return (
-    <motion.span ref={ref}>
-      {displayValue}
-      {suffix}
-    </motion.span>
+    <span ref={containerRef}>
+      <span ref={textRef}>0{suffix}</span>
+    </span>
   );
 }

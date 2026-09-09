@@ -14,6 +14,12 @@ export const education: Education[] = [
     duration: "2025",
   },
   {
+    institution: "Joint Entrance Examination (Main)",
+    degree: "JEE Main",
+    field: "94.5 Percentile",
+    duration: "2025",
+  },
+  {
     institution: "Kalashetra Matriculation Higher Secondary School",
     degree: "Secondary School Certificate (Class X)",
     field: "95.6%",

@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
+import { Menu, X, Cpu } from "lucide-react";
 import { siteConfig } from "@/data/site";
 
 const navLinks = [
@@ -19,10 +18,17 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/10 bg-black/40">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/10 bg-[#0B0F12]/85">
       <nav className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
-        <Link href="/" className="font-semibold tracking-tight hover:opacity-80 transition-opacity">
-          {siteConfig.name}
+        <Link href="/" className="font-semibold tracking-tight hover:opacity-80 transition-opacity flex items-center gap-2 group">
+          <div className="w-7 h-7 rounded border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:border-emerald-400/60 transition-colors">
+            <Cpu size={15} />
+          </div>
+          <span className="font-mono text-sm tracking-tight">{siteConfig.name}</span>
+          <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 ml-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            SYS_OK
+          </span>
         </Link>
 
         {/* Desktop Links */}
@@ -31,7 +37,7 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="opacity-70 hover:opacity-100 transition-opacity"
+              className="text-slate-300 hover:text-emerald-400 transition-colors text-xs font-mono tracking-wide"
             >
               {link.label}
             </Link>
@@ -39,8 +45,6 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <ThemeToggle />
-
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

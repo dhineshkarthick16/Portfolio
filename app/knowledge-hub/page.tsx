@@ -43,10 +43,10 @@ export default function KnowledgeHubPage() {
             <Link
               key={article.slug}
               href={`/knowledge-hub/${article.slug}`}
-              className="block rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition-colors"
+              className="block chip-card chip-corner-markers p-6"
             >
-              <div className="flex items-center justify-between text-xs opacity-50 mb-2">
-                <span className="flex items-center gap-1.5">
+              <div className="flex items-center justify-between text-xs opacity-50 mb-2 font-mono">
+                <span className="flex items-center gap-1.5 text-emerald-400">
                   <Clock size={12} />
                   {article.date}
                 </span>

@@ -1,0 +1,100 @@
+---
+title: "AegisLink"
+slug: "ageislink"
+description: "An ESP32 + BLE crash-detection system for two-wheelers, paired with a dual-console web platform for real-time hospital emergency response and parametric insurance settlement."
+coverImage: "/images/projects/ageislink-cover.png"
+techStack: ["ESP32", "Flutter", "BLE", "Python / Flask-SocketIO"]
+githubUrl: "https://github.com/dhineshkarthick16/AegisLink"
+status: "Completed"
+---
+
+## Overview
+
+AegisLink is a two-part system: an ESP32 + BLE-based crash detection node
+for two-wheelers, and a companion dual-console web platform
+(**Aegis_Finmed**) that demonstrates how crash telemetry can drive both
+real-time hospital emergency response and instant parametric insurance
+settlement.
+
+Related repository: [Aegis_Finmed](https://github.com/dhineshkarthick16/Aegis_Finmed)
+
+## Mobile App — Crash Detection Client
+
+A Flutter-based crash detection app integrated with an ESP32 device over
+Bluetooth Low Energy (BLE). When a crash signal is detected from the
+hardware, the app connects via BLE, receives real-time alert data, fetches
+live GPS location, and triggers an emergency SOS message.
+
+**Tech stack:** Flutter, Dart, ESP32, `flutter_blue_plus`, `geolocator`,
+`permission_handler`, `url_launcher`
+
+**Features:**
+- Auto BLE scanning and reconnect
+- Real-time crash signal detection
+- Live GPS location retrieval
+- SOS message trigger
+- Clean UI with live data display
+
+## Dashboard — Hospital & InsurTech Consoles
+
+The web dashboard is an institutional dual-console system built around a
+single simulated incident, designed to demonstrate real-time golden-hour
+emergency response paired with instant parametric insurance underwriting.
+
+### Hospital Emergency Trauma Console
+Modeled around a hospital's trauma desk — live capacity bar (trauma beds,
+ICU ventilators, on-duty surgical lead), a priority inbound feed ranked by
+golden-hour urgency, a live traffic-adjusted ETA map with a moving ambulance
+marker, a pre-arrival trauma sheet (patient profile, crash physics: peak G,
+tilt angle, deceleration), and a one-click action dock (reserve trauma bay,
+alert blood bank, call paramedic, generate cashless admission slip).
+
+### Finance & InsurTech Console (ACKO × AegisLink)
+Models an automated parametric claims flow — a claims queue with
+auto-verified triggers, an interactive MPU sensor telemetry waveform with
+cursor scrubbing and a downloadable raw CSV log, algorithmic fraud-scoring
+bars, a calculated damage bracket, and an instant UPI micro-advance flow
+with hospital pre-authorization.
+
+### Shared Interactive Elements
+- Vehicle detail drawer (VIN, firmware status, battery health, edge signature)
+- Insurance dossier & real-time settlement timeline drawer
+- Cashless admission slip / auto-FNOL modal
+- En-route paramedic VoIP terminal with live vitals stream
+- A "God Mode" demo switcher for live pitch demonstrations, linking both
+  consoles to a shared simulated incident in real time
+
+## Running the Dashboard
+
+The dashboard has zero external runtime dependencies for a basic static view:
+
+```bash
+# Option A — just open it directly
+# double-click dashboard/index.html
+
+# Option B — local static server
+npx serve dashboard
+# or
+python -m http.server 8000
+```
+
+For the real-time WebSocket version:
+
+```bash
+pip install flask flask-cors flask-socketio simple-websocket
+python server.py
+```
+
+Simulated crash telemetry can be posted to trigger a live dashboard update:
+
+```bash
+python test_crash_report.py "TN-09-CB-1234"
+# or
+curl -X POST http://localhost:5000/api/crash-report \
+  -H "Content-Type: application/json" \
+  -d '{ "rider_id": "TN-11-AX-4412", "latitude": 12.8912, "longitude": 80.0813,
+       "kinematics_payload": { "peak_g": 9.2, "tilt_angle": 74.0, "pre_speed_kmh": 52.0 } }'
+```
+
+All connected dashboards receive the `crash_alert` WebSocket event and
+render a new incident card in real time, with no page refresh required.

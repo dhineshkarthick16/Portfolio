@@ -49,7 +49,7 @@ export default async function ProjectPage({
         {frontmatter.techStack.map((tech) => (
           <span
             key={tech}
-            className="px-3 py-1 rounded-full text-xs bg-white/5 border border-white/10 opacity-70 font-mono"
+            className="smd-pill bg-white/5 border border-white/10 text-slate-300"
           >
             {tech}
           </span>
@@ -61,7 +61,7 @@ export default async function ProjectPage({
           href={frontmatter.githubUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:opacity-90 transition-opacity"
+          className="capacitive-btn text-xs py-2.5 px-4"
         >
           <GithubIcon size={16} />
           View on GitHub
@@ -70,7 +70,7 @@ export default async function ProjectPage({
         {hasStory && (
           <Link
             href={`/blog/${slug}`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/20 text-sm font-medium hover:bg-white/5 transition-colors text-blue-400"
+            className="capacitive-btn capacitive-btn-copper text-xs py-2.5 px-4"
           >
             <BookOpen size={16} />
             Read Behind-the-Scenes Story

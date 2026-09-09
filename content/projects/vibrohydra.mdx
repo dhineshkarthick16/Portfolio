@@ -1,0 +1,58 @@
+---
+title: "VibroHydra — Intelligent Pipeline Vibration Monitoring"
+slug: "vibrohydra"
+description: "A pipeline structural health and flow monitoring suite combining vibration modeling, DSP feature extraction, machine learning classification, and acoustic TDOA defect localization."
+coverImage: "/images/projects/vibrohydra-cover.png"
+techStack: ["Python", "DSP", "Machine Learning", "TDOA Localization"]
+githubUrl: "https://github.com/dhineshkarthick16/VibroHydra"
+status: "Completed"
+---
+
+## Overview
+
+VibroHydra is a pipeline structural health and flow condition monitoring
+suite that combines physically-grounded vibration synthesis, digital signal
+processing (DSP), machine learning classification, unsupervised anomaly
+detection, and acoustic Time-Difference-of-Arrival (TDOA) defect
+localization.
+
+## Physically-Grounded Vibration Synthesis
+
+Simulates realistic hydrodynamics and structural resonance across four
+pipeline states:
+- **NORMAL_FLOW** — vortex shedding resonance (~40–60 Hz) with harmonic
+  decay and a Gaussian turbulence floor
+- **LEAK** — base flow plus high-frequency shear turbulence (200–800 Hz),
+  with randomized severity and a sigmoid onset transient
+- **BLOCKAGE** — downshifted fundamental (18–35 Hz) with low-frequency
+  slugging/surging modulations (0.5–3.5 Hz) and pressure-release bursts
+- **NO_FLOW** — baseline ambient/thermal noise floor with zero
+  hydrodynamic excitation
+
+## Digital Signal Processing & Feature Extraction
+
+- Automatic zero-mean detrending and high-pass DC offset rejection
+- 13 time- and frequency-domain features: RMS, peak, crest factor,
+  zero-crossing rate, spectral centroid, bandwidth, and energy sub-bands
+
+## Machine Learning & Anomaly Detection
+
+- **Supervised classifier:** multi-class Random Forest with zero
+  train/test leakage
+- **Unsupervised anomaly detector:** Isolation Forest trained strictly on
+  NORMAL_FLOW baseline data
+- Pre-trained serialized models stored in `models/`
+
+## Virtual Two-Node TDOA Localization
+
+Acoustic Time-Difference-of-Arrival estimation via cross-correlation peak
+lag, delivering millimeter-level localization accuracy on 10-meter pipe
+segments.
+
+## Interactive Streamlit Operations Dashboard
+
+- Live waveform and FFT spectrum visualizers
+- Real-time diagnostic readouts, class probabilities, and an anomaly gauge
+- Interactive 1D pipeline diagram comparing ground truth vs. estimated
+  defect position
+- Persistent session event history log

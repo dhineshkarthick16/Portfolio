@@ -1,45 +1,59 @@
 @import "tailwindcss";
+
 :root {
-  --background: #0a0c10;
-  --foreground: #ededed;
-  --pcb-line: rgba(56, 189, 248, 0.05);
-  --pcb-node: rgba(56, 189, 248, 0.12);
-  --chip-border: rgba(255, 255, 255, 0.12);
+  --background: #0B0F12;
+  --foreground: #E2E8F0;
+  
+  /* Hardware Theme Color Palette */
+  --pcb-obsidian: #0B0F12;
+  --pcb-silicon: #131A20;
+  --circuit-green: #10B981;
+  --circuit-green-glow: #00FF66;
+  --copper: #D97706;
+  --copper-glow: #F59E0B;
+  --logic-cyan: #06B6D4;
+  --logic-cyan-glow: #38BDF8;
+
+  /* PCB Canvas Grid */
+  --pcb-line-green: rgba(16, 185, 129, 0.04);
+  --pcb-line-copper: rgba(217, 119, 6, 0.05);
+  --pcb-via-node: rgba(16, 185, 129, 0.15);
+  --chip-border: rgba(255, 255, 255, 0.08);
 }
 
-.light {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --pcb-line: rgba(14, 165, 233, 0.05);
-  --pcb-node: rgba(14, 165, 233, 0.12);
-  --chip-border: rgba(0, 0, 0, 0.1);
+html {
+  color-scheme: dark;
+  background-color: #0B0F12;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  background: #0B0F12;
   color: var(--foreground);
-  transition: background 0.25s ease, color 0.25s ease;
   min-height: 100vh;
   overflow-x: hidden;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-/* Custom modern scrollbar */
+/* Custom Microchip Modern Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #0B0F12;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(16, 185, 129, 0.25);
   border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.1);
 }
-.light ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
 }
 
-/* PCB Grid Background */
+/* Base Silicon PCB Grid Substrate */
 body::before {
   content: "";
   position: fixed;
@@ -47,12 +61,13 @@ body::before {
   pointer-events: none;
   z-index: 0;
   background-image: 
-    radial-gradient(var(--pcb-node) 1.2px, transparent 1.2px),
-    linear-gradient(to right, var(--pcb-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--pcb-line) 1px, transparent 1px);
-  background-size: 32px 32px, 64px 64px, 64px 64px;
-  mask-image: radial-gradient(ellipse at 50% 30%, black 50%, transparent 95%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 50%, transparent 95%);
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 1px, transparent 1.2px),
+    radial-gradient(circle at 100% 100%, rgba(217, 119, 6, 0.12) 1.2px, transparent 1.4px),
+    linear-gradient(to right, var(--pcb-line-green) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--pcb-line-green) 1px, transparent 1px);
+  background-size: 32px 32px, 64px 64px, 64px 64px, 64px 64px;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 60%, transparent 98%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 60%, transparent 98%);
 }
 
 main {
@@ -60,32 +75,80 @@ main {
   z-index: 1;
 }
 
-/* Hardware / IC Chip Card Border Accent */
+/* ==========================================================================
+   Silicon Microchip Cards (.chip-card)
+   Hardware-accelerated surface-mount component package.
+   Uses GPU-first transform, isolated layout/paint containment,
+   and pre-rendered glow overlay fading via opacity (zero dynamic box-shadow recalculations).
+   ========================================================================== */
 .chip-card {
   position: relative;
-  border-radius: 1rem;
-  border: 1px solid var(--chip-border);
-  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(160deg, #141B22 0%, #0D1217 100%);
+  box-shadow: 
+    inset 1px 1px 0 0 rgba(255, 255, 255, 0.06),
+    inset -1px -1px 0 0 rgba(0, 0, 0, 0.4),
+    0 4px 20px -2px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  transform: translateY(0) scale(1);
+  contain: layout style paint;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  overflow: hidden;
 }
 
-.light .chip-card {
-  background: rgba(255, 255, 255, 0.7);
+/* Base Circuit Trace Blueprint Background (Modeled after user-uploaded Image 1) */
+.chip-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 320' fill='none' stroke='%2338BDF8' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 80 L55 35 H120 M10 95 L65 40 H140 M10 110 L75 45 H160 M10 125 L85 50 H180'/%3E%3Ccircle cx='120' cy='35' r='3.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='140' cy='40' r='3.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='160' cy='45' r='3.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='180' cy='50' r='3.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='40' cy='18' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='40' cy='28' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='40' cy='38' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Cpath d='M240 0 V55 L270 85 H310 M255 0 V50 L285 80 H330' stroke='%230EA5E9'/%3E%3Ccircle cx='310' cy='85' r='3.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='330' cy='80' r='3.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='280' cy='30' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='292' cy='30' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='304' cy='30' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Cpath d='M500 210 H410 L380 240 V290 M500 225 H420 L395 250 H340 M500 240 H430 L410 260 H320'/%3E%3Ccircle cx='380' cy='290' r='3.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='340' cy='250' r='3.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='320' cy='260' r='3.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='485' cy='160' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='485' cy='172' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='485' cy='184' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='485' cy='196' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Cpath d='M45 320 V260 L80 225 H130'/%3E%3Ccircle cx='130' cy='225' r='3.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='20' cy='265' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='20' cy='277' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3Ccircle cx='20' cy='289' r='2.5' stroke='%2338BDF8' fill='%230B1015'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.12;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+/* Pre-Rendered Glow & Active Border Overlay (GPU-accelerated opacity transition) */
+.chip-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  box-shadow: 
+    0 0 24px -2px rgba(6, 182, 212, 0.22),
+    0 0 10px -2px rgba(56, 189, 248, 0.12),
+    inset 0 0 14px rgba(56, 189, 248, 0.08);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
+  z-index: 1;
 }
 
 .chip-card:hover {
-  border-color: rgba(56, 189, 248, 0.35);
-  box-shadow: 0 0 25px -5px rgba(56, 189, 248, 0.12);
-  transform: translateY(-4px) scale(1.02);
+  transform: translate3d(0, -4px, 0);
+}
+
+.chip-card:hover::before {
+  opacity: 0.24;
+}
+
+.chip-card:hover::after {
+  opacity: 1;
 }
 
 .chip-card:active {
-  transform: translateY(-2px) scale(0.98);
+  transform: translate3d(0, -1px, 0);
 }
 
-/* IC package corner contact markers */
+/* Corner Contact Markers (Metallic Gold/Copper Fiducials) */
 .chip-corner-markers {
   position: relative;
 }
@@ -94,10 +157,11 @@ main {
 .chip-corner-markers::after {
   content: "";
   position: absolute;
-  width: 6px;
-  height: 6px;
-  border-color: rgba(56, 189, 248, 0.4);
+  width: 7px;
+  height: 7px;
+  border-color: rgba(245, 158, 11, 0.55);
   pointer-events: none;
+  transition: border-color 0.25s ease;
 }
 
 .chip-corner-markers::before {
@@ -114,6 +178,127 @@ main {
   border-right: 1.5px solid;
 }
 
+.chip-card:hover .chip-corner-markers::before,
+.chip-card:hover .chip-corner-markers::after,
+.chip-card:hover::before,
+.chip-card:hover::after {
+  border-color: rgba(16, 185, 129, 0.7);
+}
+
+/* Virtual Solder Leads / Pin Headers (SMD Package Edge Connectors) */
+.chip-pins-x::before,
+.chip-pins-x::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(217, 119, 6, 0.35) 0,
+    rgba(217, 119, 6, 0.35) 4px,
+    transparent 4px,
+    transparent 12px
+  );
+  pointer-events: none;
+  opacity: 0.6;
+  transition: opacity 0.25s ease;
+}
+
+.chip-pins-x::before {
+  top: -1px;
+}
+
+.chip-pins-x::after {
+  bottom: -1px;
+}
+
+.chip-card:hover .chip-pins-x::before,
+.chip-card:hover .chip-pins-x::after {
+  opacity: 1;
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(16, 185, 129, 0.6) 0,
+    rgba(16, 185, 129, 0.6) 4px,
+    transparent 4px,
+    transparent 12px
+  );
+}
+
+/* ==========================================================================
+   Capacitive Touch Buttons (.capacitive-btn)
+   Hardware-accelerated touch pad with pre-rendered glow overlay (GPU opacity)
+   ========================================================================== */
+.capacitive-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.5rem;
+  background: rgba(19, 26, 32, 0.9);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #E2E8F0;
+  box-shadow: 
+    inset 0 0 10px rgba(16, 185, 129, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  contain: layout style paint;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* Pre-rendered Glow Overlay on Buttons (Zero dynamic box-shadow recalculations) */
+.capacitive-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(16, 185, 129, 0.85);
+  box-shadow: 
+    0 0 18px rgba(16, 185, 129, 0.35),
+    inset 0 0 12px rgba(0, 255, 102, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  will-change: opacity;
+}
+
+.capacitive-btn:hover {
+  transform: translate3d(0, -2px, 0);
+  color: #FFFFFF;
+}
+
+.capacitive-btn:hover::after {
+  opacity: 1;
+}
+
+.capacitive-btn:active {
+  transform: scale3d(0.97, 0.97, 1);
+}
+
+/* Secondary Copper Capacitive Button */
+.capacitive-btn-copper {
+  border-color: rgba(217, 119, 6, 0.4);
+  box-shadow: 
+    inset 0 0 10px rgba(217, 119, 6, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.capacitive-btn-copper::after {
+  border-color: rgba(245, 158, 11, 0.85);
+  box-shadow: 
+    0 0 18px rgba(245, 158, 11, 0.35),
+    inset 0 0 12px rgba(245, 158, 11, 0.15);
+}
+
 /* Surface Mount Device (SMD) Tag Pill */
 .smd-pill {
   position: relative;
@@ -121,21 +306,232 @@ main {
   font-size: 0.75rem;
   padding: 0.2rem 0.65rem;
   border-radius: 0.375rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-left: 2px solid rgba(56, 189, 248, 0.5);
-  border-right: 2px solid rgba(56, 189, 248, 0.5);
+  background: rgba(19, 26, 32, 0.8);
+  border-left: 2px solid rgba(16, 185, 129, 0.6);
+  border-right: 2px solid rgba(16, 185, 129, 0.6);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   letter-spacing: 0.025em;
-  opacity: 0.85;
-  transition: all 0.2s ease;
+  color: #CBD5E1;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.2s ease;
 }
 
 .smd-pill:hover {
+  transform: translate3d(0, -1px, 0);
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   Miniature IC Package Components (.ic-pill)
+   GPU-accelerated microchip package:
+   Uses isolated containment, scale3d transforms, and pre-rendered perimeter
+   lead pins & glow overlay (strictly fading via opacity).
+   ========================================================================== */
+.ic-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.26rem 0.68rem 0.26rem 0.55rem;
+  border-radius: 0.35rem;
+  background: linear-gradient(170deg, #131A21 0%, #0B0F14 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #CBD5E1;
+  letter-spacing: 0.035em;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 2px 5px rgba(0, 0, 0, 0.5);
+  contain: layout style paint;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  user-select: none;
+  cursor: pointer;
+}
+
+/* Pre-Rendered Microchip Perimeter Lead Pins & Active Glow Overlay (Fades via opacity) */
+.ic-pill::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid rgba(56, 189, 248, 0.75);
+  box-shadow: 
+    0 0 14px -2px rgba(6, 182, 212, 0.4),
+    inset 0 0 6px rgba(56, 189, 248, 0.15);
+  background-image: 
+    repeating-linear-gradient(to right, #38BDF8 0, #38BDF8 2px, transparent 2px, transparent 5px),
+    repeating-linear-gradient(to right, #38BDF8 0, #38BDF8 2px, transparent 2px, transparent 5px);
+  background-size: calc(100% - 10px) 1.5px, calc(100% - 10px) 1.5px;
+  background-position: center top, center bottom;
+  background-repeat: no-repeat;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+  will-change: opacity;
+}
+
+/* Pin-1 Index Solder Dot */
+.ic-pill::before {
+  content: "";
+  display: inline-block;
+  width: 4.5px;
+  height: 4.5px;
+  border-radius: 50%;
+  background: #06B6D4;
+  box-shadow: 0 0 5px #38BDF8;
+  flex-shrink: 0;
+}
+
+/* GPU Hardware-Accelerated Pop Animation (Translate3D + Scale3D) */
+.ic-pill:hover {
+  transform: scale3d(1.08, 1.08, 1) translate3d(0, -2px, 0);
+  color: #FFFFFF;
+  z-index: 10;
+}
+
+.ic-pill:hover::after {
   opacity: 1;
-  background: rgba(56, 189, 248, 0.1);
-  border-left-color: #38bdf8;
-  border-right-color: #38bdf8;
+}
+
+.ic-pill:active {
+  transform: scale3d(1.02, 1.02, 1) translate3d(0, 0, 0);
+}
+
+/* Amber / Copper IC Package Variant */
+.ic-pill-amber::before {
+  background: #F59E0B;
+  box-shadow: 0 0 5px #F59E0B;
+}
+
+.ic-pill-amber::after {
+  border-color: rgba(245, 158, 11, 0.75);
+  box-shadow: 
+    0 0 14px -2px rgba(245, 158, 11, 0.4),
+    inset 0 0 6px rgba(245, 158, 11, 0.15);
+  background-image: 
+    repeating-linear-gradient(to right, #F59E0B 0, #F59E0B 2px, transparent 2px, transparent 5px),
+    repeating-linear-gradient(to right, #F59E0B 0, #F59E0B 2px, transparent 2px, transparent 5px);
+}
+
+/* Emerald / Circuit Green IC Package Variant */
+.ic-pill-emerald::before {
+  background: #10B981;
+  box-shadow: 0 0 5px #00FF66;
+}
+
+.ic-pill-emerald::after {
+  border-color: rgba(16, 185, 129, 0.75);
+  box-shadow: 
+    0 0 14px -2px rgba(16, 185, 129, 0.4),
+    inset 0 0 6px rgba(16, 185, 129, 0.15);
+  background-image: 
+    repeating-linear-gradient(to right, #00FF66 0, #00FF66 2px, transparent 2px, transparent 5px),
+    repeating-linear-gradient(to right, #00FF66 0, #00FF66 2px, transparent 2px, transparent 5px);
+}
+
+/* Neon Violet / Deep Core IC Package Variant */
+.ic-pill-purple::before {
+  background: #A855F7;
+  box-shadow: 0 0 5px #C084FC;
+}
+
+.ic-pill-purple::after {
+  border-color: rgba(192, 132, 252, 0.75);
+  box-shadow: 
+    0 0 14px -2px rgba(168, 85, 247, 0.4),
+    inset 0 0 6px rgba(168, 85, 247, 0.15);
+  background-image: 
+    repeating-linear-gradient(to right, #C084FC 0, #C084FC 2px, transparent 2px, transparent 5px),
+    repeating-linear-gradient(to right, #C084FC 0, #C084FC 2px, transparent 2px, transparent 5px);
+}
+
+/* ==========================================================================
+   Square IC Package Component (.ic-chip-box)
+   Small square silicon IC package with pre-rendered glow overlay (GPU opacity)
+   ========================================================================== */
+.ic-chip-box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  background: linear-gradient(145deg, #161F27 0%, #0D1217 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    inset 1px 1px 0 rgba(255, 255, 255, 0.08),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.6),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+  contain: layout style paint;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.ic-chip-box::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid rgba(56, 189, 248, 0.65);
+  box-shadow: 
+    0 0 18px -2px rgba(6, 182, 212, 0.35),
+    inset 0 0 10px rgba(56, 189, 248, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+  will-change: opacity;
+}
+
+.ic-chip-box:hover {
+  transform: scale3d(1.08, 1.08, 1) translate3d(0, -2px, 0);
+}
+
+.ic-chip-box:hover::after {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   IC Package Orientation Notch & Laser Imprints
+   ========================================================================== */
+.chip-notch {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: radial-gradient(circle at 35% 35%, #0B0F12 20%, #172028 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 5;
+  transition: border-color 0.25s ease;
+}
+
+.chip-card:hover .chip-notch {
+  border-color: rgba(16, 185, 129, 0.6);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+.chip-imprint {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.22);
+  pointer-events: none;
+  user-select: none;
+  transition: color 0.25s ease;
+}
+
+.chip-card:hover .chip-imprint {
+  color: rgba(16, 185, 129, 0.5);
 }
 
 /* Section Header Hardware Label */
@@ -147,7 +543,7 @@ main {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #38bdf8;
+  color: var(--logic-cyan);
   margin-bottom: 0.75rem;
 }
 
@@ -156,10 +552,54 @@ main {
   display: inline-block;
   width: 2rem;
   height: 1px;
-  background: rgba(56, 189, 248, 0.3);
+  background: linear-gradient(to right, rgba(6, 182, 212, 0.6), transparent);
+}
+
+/* Active Signal Current Animation */
+@keyframes signalPulse {
+  0% {
+    stroke-dashoffset: 200;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-signal-pulse {
+  animation: signalPulse 3s linear infinite;
 }
 
 /* LED Indicator */
-.led-glow {
-  box-shadow: 0 0 8px 1px currentColor;
+.led-glow-green {
+  box-shadow: 0 0 10px 2px #10B981, 0 0 20px 4px rgba(0, 255, 102, 0.4);
+}
+
+.led-glow-copper {
+  box-shadow: 0 0 10px 2px #D97706, 0 0 20px 4px rgba(245, 158, 11, 0.4);
+}
+
+.led-glow-cyan {
+  box-shadow: 0 0 10px 2px #06B6D4, 0 0 20px 4px rgba(56, 189, 248, 0.4);
+}
+
+/* ==========================================================================
+   Hardware-Accelerated 60fps Paint & Rendering Optimization
+   ========================================================================== */
+
+/* Defer off-screen sections until scrolled into view (skips layout/paint) */
+.cv-auto-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 650px;
+}
+
+/* Compositor-Thread Circuit Wire Pulse (Zero JS, 60fps/120fps) */
+@keyframes pcbWireDash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.wire-pulse {
+  animation: pcbWireDash linear infinite;
+  will-change: stroke-dashoffset;
 }

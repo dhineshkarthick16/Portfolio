@@ -12,24 +12,37 @@ import { Achievements } from "@/components/sections/Achievements";
 import { KnowledgeHubPreview } from "@/components/sections/KnowledgeHubPreview";
 import { Resume } from "@/components/sections/Resume";
 import { Contact } from "@/components/sections/Contact";
-import { getFeaturedAchievements } from "@/lib/supabase";
+import { ScrollProgressBus } from "@/components/ui/ScrollProgressBus";
+import { PcbTraces } from "@/components/ui/PcbTraces";
+import { getQualifyingAchievements } from "@/lib/supabase";
+import { getAllProjects } from "@/lib/mdx";
+import { experience } from "@/data/experience";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const featuredAchievements = await getFeaturedAchievements();
+  const achievements = await getQualifyingAchievements();
+  const projects = getAllProjects();
 
   return (
     <>
+      <ScrollProgressBus />
       <Navbar />
+      <PcbTraces />
       <main>
         <Hero />
         <About />
-        <QuickStats />
+        <QuickStats
+          hackathonsCount={achievements.length}
+          projectsCount={Math.max(10, projects.length)}
+          internshipsCount={experience.length}
+        />
         <Education />
         <Skills />
         <Certifications />
         <Projects />
         <Experience />
-        <Achievements items={featuredAchievements} />
+        <Achievements items={achievements} />
         <KnowledgeHubPreview />
         <Resume />
         <Contact />
