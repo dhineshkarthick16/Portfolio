@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 
 export function useTheme() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const stored = localStorage.getItem("theme") as "dark" | "light" | null;
     if (stored) {
       setTheme(stored);
@@ -20,5 +22,5 @@ export function useTheme() {
     localStorage.setItem("theme", next);
   };
 
-  return { theme, toggleTheme };
+  return { theme, toggleTheme, mounted };
 }

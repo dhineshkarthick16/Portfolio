@@ -1,0 +1,29 @@
+---
+title: "Behind the Silicon: My VLSI Internship at the Centre for Advanced Chip Design"
+slug: "cadence-vlsi-internship"
+type: "experience"
+date: "June 2026"
+summary: "Reflections, engineering hurdles, and hands-on learnings from designing ultra-low-power flip-flops and running DRC/LVS in Cadence Virtuoso."
+readingTime: "5 min read"
+relatedSlug: "cadence-vlsi-internship"
+tags: ["VLSI", "Cadence Virtuoso", "Analog IC", "Layout", "DRC/LVS"]
+---
+
+## The Origin & Objective
+
+During my tenure at the Centre for Advanced Chip Design – Centre of Excellence, I immersed myself in the rigorous workflow of custom IC design. Moving beyond textbook digital logic into physical transistor sizing and layout parasitic extraction fundamentally changed how I view silicon engineering.
+
+## What It Actually Looked Like
+
+The core focus was implementing and benchmarking an ultra-low-power flip-flop topology in standard CMOS:
+
+- **Schematic Capture**: Sizing PMOS and NMOS trees for minimal leakage during idle clock phases while preserving setup and hold time margins.
+- **Custom Physical Layout**: Floorplanning to minimize parasitic interconnect capacitance and resistance.
+- **Verification Loop**: Iterative Design Rule Checks (DRC) and Layout Versus Schematic (LVS) verification using Cadence Assura / Pegasus.
+
+## Major Takeaways
+
+1. **Parasitics Are Everything**: At advanced nodes, layout topology dictates power and delay as much as the schematic gate architecture.
+2. **Verification Discipline**: Passing LVS is never just about connectivity — substrate taps, well proximity effects, and antenna rules demand attention early in the layout phase.
+
+*Full technical write-up and waveform analysis coming soon.*

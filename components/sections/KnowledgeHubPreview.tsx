@@ -6,32 +6,37 @@ import { BookOpen, ArrowRight } from "lucide-react";
 
 export function KnowledgeHubPreview() {
   return (
-    <section className="max-w-4xl mx-auto px-6 py-16">
+    <section className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="rounded-2xl border border-white/10 bg-white/5 p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+        className="chip-card chip-corner-markers p-7 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
       >
         <div className="flex items-start gap-4">
-          <div className="p-2.5 rounded-full bg-white/10 shrink-0">
-            <BookOpen size={20} className="opacity-80" />
+          <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shrink-0">
+            <BookOpen size={22} />
           </div>
           <div>
-            <h3 className="text-lg font-medium mb-1">Knowledge Hub</h3>
-            <p className="text-sm opacity-60">
-              Technical write-ups on VLSI, embedded systems, and AI — coming soon.
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-lg font-semibold">Knowledge Hub</h3>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                NOTES & PAPERS
+              </span>
+            </div>
+            <p className="text-sm opacity-70 leading-relaxed max-w-xl">
+              Technical write-ups and design notes on CMOS flip-flop architectures, RTOS drivers, and edge anomaly detection.
             </p>
           </div>
         </div>
 
         <Link
           href="/knowledge-hub"
-          className="inline-flex items-center gap-2 text-sm font-medium opacity-80 hover:opacity-100 transition-opacity whitespace-nowrap"
+          className="inline-flex items-center gap-2 text-sm font-mono font-medium text-cyan-400 hover:text-cyan-300 transition-colors whitespace-nowrap"
         >
           Visit Knowledge Hub
-          <ArrowRight size={16} />
+          <ArrowRight size={15} />
         </Link>
       </motion.div>
     </section>

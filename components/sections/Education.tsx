@@ -19,7 +19,7 @@ export function Education() {
       <div className="space-y-8">
         {education.map((item, index) => (
           <motion.div
-            key={item.institution}
+            key={`${item.institution}-${item.degree}`}
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -32,14 +32,14 @@ export function Education() {
             <p className="text-sm opacity-70 mt-1">
               {item.degree} — {item.field}
             </p>
-            <p className="text-sm opacity-50 mt-1">{item.duration}</p>
+            <p className="text-xs sm:text-sm opacity-50 mt-1 font-mono">{item.duration}</p>
 
             {item.coursework && item.coursework.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
+              <div className="flex flex-wrap gap-1.5 mt-4">
                 {item.coursework.map((course) => (
                   <span
                     key={course}
-                    className="px-3 py-1 rounded-full text-xs bg-white/5 border border-white/10 opacity-80"
+                    className="px-2.5 py-0.5 rounded-full text-xs bg-white/5 border border-white/10 opacity-80 font-mono"
                   >
                     {course}
                   </span>

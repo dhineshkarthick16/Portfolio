@@ -9,5 +9,9 @@ export const siteConfig = {
     linkedin: "https://linkedin.com/in/dhineshkarthick16",
     leetcode: "https://leetcode.com/dhineshkarthick16",
   },
-  resumeUrl: "/resume.pdf",
+  resumeGoogleDocId: "1dd_YqEEEp1pCjDiv7RP6-Oki0diKR0X8VCa4Ra3dPEM",
+  resumeDocUrl: "https://docs.google.com/document/d/1dd_YqEEEp1pCjDiv7RP6-Oki0diKR0X8VCa4Ra3dPEM/edit?usp=sharing",
+  resumeViewUrl: "https://docs.google.com/document/d/1dd_YqEEEp1pCjDiv7RP6-Oki0diKR0X8VCa4Ra3dPEM/preview",
+  resumeDownloadUrl: "https://docs.google.com/document/d/1dd_YqEEEp1pCjDiv7RP6-Oki0diKR0X8VCa4Ra3dPEM/export?format=pdf",
+  resumeUrl: "https://docs.google.com/document/d/1dd_YqEEEp1pCjDiv7RP6-Oki0diKR0X8VCa4Ra3dPEM/export?format=pdf",
 };

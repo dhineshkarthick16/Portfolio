@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { motion } from "framer-motion";
-import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Send, Terminal } from "lucide-react";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -15,9 +15,8 @@ export function Contact() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Honeypot check — bots fill every field, humans never see or fill this one
+    // Honeypot check
     if (formData.get("company")) {
-      // Silently pretend success to not tip off the bot
       setStatus("success");
       return;
     }
@@ -60,83 +59,113 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="max-w-2xl mx-auto px-6 py-24">
-      <motion.h2
+    <section id="contact" className="max-w-2xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="text-3xl font-semibold tracking-tight mb-10"
       >
-        Contact
-      </motion.h2>
+        <span className="section-tag">// SEC_07 // TRANSMIT_MESSAGE</span>
+        <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-3">
+          Get In Touch
+        </h2>
+        <p className="text-sm opacity-60 mb-8 font-mono">
+          Have an engineering opportunity, silicon project, or question? Send a message directly.
+        </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Honeypot field — hidden from real users via CSS, bots fill it anyway */}
-        <input
-          type="text"
-          name="company"
-          tabIndex={-1}
-          autoComplete="off"
-          className="absolute -left-[9999px] w-px h-px opacity-0"
-          aria-hidden="true"
-        />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Honeypot field */}
+          <input
+            type="text"
+            name="company"
+            tabIndex={-1}
+            autoComplete="off"
+            className="absolute -left-[9999px] w-px h-px opacity-0"
+            aria-hidden="true"
+          />
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          required
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-white/30 outline-none transition-colors placeholder:opacity-40"
-        />
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] font-mono opacity-50 uppercase mb-1.5">
+                NAME_IDENTIFIER
+              </label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Dhinesh"
+                required
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 outline-none transition-all placeholder:opacity-30 text-sm font-mono"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-mono opacity-50 uppercase mb-1.5">
+                CONTACT_EMAIL
+              </label>
+              <input
+                type="email"
+                name="email"
+                placeholder="engineer@domain.com"
+                required
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 outline-none transition-all placeholder:opacity-30 text-sm font-mono"
+              />
+            </div>
+          </div>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-white/30 outline-none transition-colors placeholder:opacity-40"
-        />
+          <div>
+            <label className="block text-[11px] font-mono opacity-50 uppercase mb-1.5">
+              SUBJECT_LINE
+            </label>
+            <input
+              type="text"
+              name="subject"
+              placeholder="Collaboration / Engineering Role"
+              required
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 outline-none transition-all placeholder:opacity-30 text-sm font-mono"
+            />
+          </div>
 
-        <input
-          type="text"
-          name="subject"
-          placeholder="Subject"
-          required
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-white/30 outline-none transition-colors placeholder:opacity-40"
-        />
+          <div>
+            <label className="block text-[11px] font-mono opacity-50 uppercase mb-1.5">
+              TRANSMISSION_PAYLOAD
+            </label>
+            <textarea
+              name="message"
+              placeholder="Type your message here..."
+              required
+              rows={5}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 outline-none transition-all placeholder:opacity-30 resize-none text-sm font-mono leading-relaxed"
+            />
+          </div>
 
-        <textarea
-          name="message"
-          placeholder="Message"
-          required
-          rows={5}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-white/30 outline-none transition-colors placeholder:opacity-40 resize-none"
-        />
+          <button
+            type="submit"
+            disabled={status === "loading"}
+            className="w-full px-6 py-3.5 rounded-xl bg-white text-black text-sm font-mono font-medium hover:bg-neutral-200 transition-all disabled:opacity-50 flex items-center justify-center gap-2 group"
+          >
+            {status === "loading" ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Send size={15} className="group-hover:translate-x-0.5 transition-transform" />
+            )}
+            {status === "loading" ? "TRANSMITTING..." : "TRANSMIT MESSAGE"}
+          </button>
 
-        <button
-          type="submit"
-          disabled={status === "loading"}
-          className="w-full px-6 py-3 rounded-full bg-white text-black text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {status === "loading" && <Loader2 size={16} className="animate-spin" />}
-          {status === "loading" ? "Sending..." : "Send Message"}
-        </button>
+          {status === "success" && (
+            <div className="flex items-center gap-2 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400">
+              <CheckCircle2 size={16} className="shrink-0" />
+              <span>PAYLOAD RECEIVED: Message dispatched successfully. I will get back to you shortly.</span>
+            </div>
+          )}
 
-        {status === "success" && (
-          <p className="flex items-center gap-2 text-sm text-green-400">
-            <CheckCircle2 size={16} />
-            Message sent — I&apos;ll get back to you soon.
-          </p>
-        )}
-
-        {status === "error" && (
-          <p className="flex items-center gap-2 text-sm text-red-400">
-            <XCircle size={16} />
-            {errorMsg}
-          </p>
-        )}
-      </form>
+          {status === "error" && (
+            <div className="flex items-center gap-2 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-mono text-rose-400">
+              <XCircle size={16} className="shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+        </form>
+      </motion.div>
     </section>
   );
 }

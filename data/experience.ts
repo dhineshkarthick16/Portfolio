@@ -2,6 +2,7 @@ import { Experience } from "@/types";
 
 export const experience: Experience[] = [
   {
+    slug: "cadence-vlsi-internship",
     organization: "Centre for Advanced Chip Design – Centre of Excellence",
     role: "VLSI Internship",
     duration: "May 2026 - June 2026",

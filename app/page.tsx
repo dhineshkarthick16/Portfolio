@@ -5,14 +5,18 @@ import { About } from "@/components/sections/About";
 import { QuickStats } from "@/components/sections/QuickStats";
 import { Education } from "@/components/sections/Education";
 import { Skills } from "@/components/sections/Skills";
+import { Certifications } from "@/components/sections/Certifications";
 import { Projects } from "@/components/sections/Projects";
 import { Experience } from "@/components/sections/Experience";
 import { Achievements } from "@/components/sections/Achievements";
 import { KnowledgeHubPreview } from "@/components/sections/KnowledgeHubPreview";
 import { Resume } from "@/components/sections/Resume";
 import { Contact } from "@/components/sections/Contact";
+import { getFeaturedAchievements } from "@/lib/supabase";
 
-export default function Home() {
+export default async function Home() {
+  const featuredAchievements = await getFeaturedAchievements();
+
   return (
     <>
       <Navbar />
@@ -22,9 +26,10 @@ export default function Home() {
         <QuickStats />
         <Education />
         <Skills />
+        <Certifications />
         <Projects />
         <Experience />
-        <Achievements />
+        <Achievements items={featuredAchievements} />
         <KnowledgeHubPreview />
         <Resume />
         <Contact />

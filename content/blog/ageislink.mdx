@@ -1,0 +1,26 @@
+---
+title: "Building AgeisLink: Zero-Cloud Two-Wheeler Crash Detection"
+slug: "ageislink"
+type: "project"
+date: "2026"
+summary: "The narrative behind building a zero-internet crash detection system for highway riders using ESP32, IMU sensor fusion, and BLE."
+readingTime: "4 min read"
+relatedSlug: "ageislink"
+tags: ["ESP32", "MPU6050", "Embedded C++", "BLE", "IoT Safety"]
+---
+
+## Why We Built This
+
+Highway commuting on two-wheelers in rural corridors is plagued by dead zones. Conventional emergency notification solutions rely on active cellular data to ping servers before an alert can even be parsed. We asked: *Can we detect a severe collision and trigger dispatch purely on-edge without touching the cloud?*
+
+## The Prototyping Journey
+
+We wired an MPU6050 6-axis IMU to an ESP32 dev kit. The primary challenge was distinguishing intentional emergency maneuvers (aggressive swerving, hard braking) from true impact and rollover events.
+
+### The Protocol Hiccup
+
+During bench testing, our companion mobile app was waiting on a multi-field CSV telemetry string, but the micro-controller emitted a bare `CRASH` flag on interrupt. This led to silent drops during early tests until we standardized a lightweight binary serialization format over BLE GATT characteristics.
+
+## Next Steps
+
+We are currently calibrating the complementary filter algorithms and exploring micro-LoRa beacons for true off-grid long-range distress signalling.

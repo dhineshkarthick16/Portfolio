@@ -17,6 +17,7 @@ export interface Education {
 }
 
 export interface Experience {
+  slug: string;
   organization: string;
   role: string;
   duration: string;
@@ -27,9 +28,30 @@ export interface Achievement {
   title: string;
   organization: string;
   result: string;
+  id?: string;
 }
 
 export interface SkillCategory {
   category: string;
   skills: string[];
+}
+
+export interface Certification {
+  name: string;
+  issuer: string;
+  date: string;
+  credentialUrl?: string;
+  badge?: string;
+  skills?: string[];
+}
+
+export interface BlogPost {
+  slug: string;
+  title: string;
+  type: "project" | "experience";
+  date: string;
+  summary: string;
+  readingTime?: string;
+  relatedSlug?: string;
+  tags?: string[];
 }

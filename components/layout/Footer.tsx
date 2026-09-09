@@ -23,7 +23,7 @@ export function Footer() {
           <a href={`mailto:${siteConfig.email}`} aria-label="Email">
             <Mail size={18} className="opacity-70 hover:opacity-100 transition-opacity" />
           </a>
-          <a href={siteConfig.resumeUrl} target="_blank" rel="noopener noreferrer" className="text-sm opacity-70 hover:opacity-100 transition-opacity">
+          <a href={siteConfig.resumeDownloadUrl} download="Dhinesh_Karthick_Resume.pdf" className="text-sm opacity-70 hover:opacity-100 transition-opacity">
             Resume
           </a>
         </div>
