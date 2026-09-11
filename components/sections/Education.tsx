@@ -8,7 +8,7 @@ export function Education() {
   return (
     <section id="education" className="cv-auto-section max-w-4xl mx-auto px-6 py-24">
       <SectionHeader
-        tag="// SEC_03 // ACADEMIC_TRACK"
+        tag="// SEC_07 // ACADEMIC_TRACK"
         title="Education"
       />
 

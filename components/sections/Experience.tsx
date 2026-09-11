@@ -11,7 +11,7 @@ export function Experience() {
   return (
     <section id="experience" className="cv-auto-section max-w-4xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
       <SectionHeader
-        tag="// SEC_05 // INDUSTRIAL_EXPERIENCE"
+        tag="// SEC_03 // INDUSTRIAL_EXPERIENCE"
         title="Experience"
       />
 

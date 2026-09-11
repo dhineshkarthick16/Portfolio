@@ -1,0 +1,117 @@
+---
+title: "GeoDrain AI: Automated Geospatial Drainage Network Planning for Rural Local Bodies"
+slug: "geodrain-ai"
+type: "project"
+date: "2026-06"
+summary: "An AI-assisted geospatial decision platform that transforms satellite elevation models into automated, gravity-driven drainage alignments and cost estimates for Gram Panchayats."
+readingTime: "5 min read"
+relatedSlug: "geodrain-ai"
+tags: ["Geospatial AI", "Hydrology", "Streamlit", "Python", "GIS", "Civil Engineering"]
+team: ["Keerthika N", "Prithish S", "Lakshmi Priya S"]
+---
+
+<div className="p-4 rounded-xl border border-amber-500/30 bg-[#161208] mb-8 font-mono text-xs space-y-1">
+  <div className="flex items-center gap-2 text-amber-400 font-semibold">
+    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+    <span>PROJECT CREDITS & ENGINEERING CONSOLE</span>
+  </div>
+  <div className="text-white/80"><span className="text-white/40">Role:</span> Lead Engineer / Geospatial & Algorithmic Specialist</div>
+  <div className="text-white/80"><span className="text-white/40">Team Members:</span> Keerthika N, Prithish S, Lakshmi Priya S</div>
+  <div className="text-white/80"><span className="text-white/40">Core Stack:</span> Python, GDAL, Rasterio, RichDEM, NumPy, GeoPandas, Streamlit</div>
+</div>
+
+## The Problem: Drainage Blindness in Rural India
+
+In rural and semi-urban local administrative bodies (Gram Panchayats), monsoon rains frequently transform streets into stagnant pools, inundating agricultural land and triggering vector-borne epidemics. 
+
+Despite the urgency, building effective storm drainage systems in rural areas remains crippled by systemic barriers:
+1. **Costly Manual Surveying:** Commercial GIS contractors charge tens of thousands of rupees per square kilometer for topographic surveying, far exceeding rural Panchayat budgets.
+2. **Intuition-Based Construction:** Without accurate slope contouring, local masonry drains are often dug haphazardly—sometimes resulting in drains sloping *uphill*, trapping stagnant wastewater.
+3. **Data Disconnect:** While high-resolution satellite Digital Elevation Models (DEMs) are freely available globally, raw raster files cannot be read or utilized by local municipal officers.
+
+**GeoDrain AI** bridges this gap. It provides an automated, browser-accessible decision-support system that converts satellite terrain rasters directly into optimized, gravity-assisted drainage network layouts, hydraulic specifications, and procurement-ready civil estimates.
+
+---
+
+## The Unified Algorithmic Pipeline
+
+```
++-------------------------------------------------------+
+|              Raw Satellite DEM / DTM Rasters          |
+|             (Copernicus 30m / SRTM / ALOS)            |
++-------------------------------------------------------+
+                           |
+                           v
++-------------------------------------------------------+
+|             Hydrological Terrain Conditioning         |
+|  Planchon-Darboux Sink Filling & Pit Depression Removal|
++-------------------------------------------------------+
+                           |
+                           v
++-------------------------------------------------------+
+|           D8 Flow Direction & Flow Accumulation       |
+|    Calculates Steepest Gradient Vector for Every Cell |
++-------------------------------------------------------+
+                           |
+                           v
++-------------------------------------------------------+
+|         Automated Drainage Alignment Optimization     |
+|   Traces Natural Gravity Paths to Outfalls/Waterbodies|
++-------------------------------------------------------+
+                           |
+                           v
++-------------------------------------------------------+
+|        Hydraulic Sizing & Panchayat Planning Report   |
+|   Manning's Flow Sizing, Trench Cut Volumes, Cost Est.|
++-------------------------------------------------------+
+```
+
+---
+
+## 1. Digital Terrain Model (DTM) Conditioning
+
+Raw satellite elevation models frequently contain small sensor noise pits and digital artifacts where water appears trapped. GeoDrain AI ingests satellite elevation rasters and applies the **Planchon-Darboux sink-filling algorithm**:
+- Artificial sinks and depressions are filled to their pour-point elevation.
+- Continuous downward gradient is established across the terrain grid so simulated runoff flows uninterrupted toward natural drainage basins.
+
+---
+
+## 2. D8 Flow Direction & Accumulation Matrix
+
+Using the conditioned elevation surface, the algorithm evaluates each cell relative to its 8 neighboring grid cells (the D8 model):
+1. **Flow Direction Matrix:** Evaluates slope:
+   $$S = \frac{\Delta z}{d}$$
+   where $\Delta z$ is elevation difference and $d$ is horizontal distance ($1$ or $\sqrt{2}$). Water flows strictly toward the neighbor with the steepest negative descent.
+2. **Flow Accumulation Grid:** By tracing all upstream tributary cells that drain through each point, high-accumulation channels naturally highlight historical stormwater pathways and flood-risk corridors.
+
+---
+
+## 3. Intelligent Alignment Optimization
+
+Rather than designing arbitrary grid patterns, GeoDrain AI traces optimal pipe centerlines along natural dendritic flow paths:
+- **Gravity-First Alignment:** Maximizes gravity flow to minimize or completely eliminate the need for costly electrical lift pumps.
+- **Natural Outfall Connection:** Directs stormwater discharge directly into natural ponds, irrigation tanks (*eris*), or rivers, supporting local groundwater replenishment.
+- **Excavation Depth Optimization:** Minimizes required trench cut-and-fill depths along roadsides to control civil construction costs.
+
+---
+
+## 4. Hydraulic Sizing via Manning's Equation
+
+To translate geospatial vectors into civil construction specifications, the system calculates pipe and channel cross-sections using **Manning's open-channel equation**:
+
+$$Q = \frac{1}{n} A R_h^{2/3} S^{1/2}$$
+
+- $Q$: Peak stormwater runoff derived via the Rational Method ($Q = C \cdot I \cdot A$)
+- $n$: Manning's roughness coefficient for precast concrete or masonry
+- $A$: Wet cross-sectional area
+- $R_h$: Hydraulic radius ($A / P$)
+- $S$: Natural terrain slope gradient
+
+---
+
+## 5. Interactive Streamlit Operations Console
+
+Built collaboratively by our team (**Keerthika N, Prithish S, Lakshmi Priya S, and Dhinesh Karthick R**), the web platform allows non-technical administrators to:
+- Select village boundaries directly on an interactive satellite base map.
+- View interactive 3D terrain slope heatmaps and water accumulation vectors.
+- One-click generate comprehensive civil planning reports: total required pipe length (in meters), optimal pipe diameter brackets, excavation volumes ($\text{m}^3$), and estimated material budgets.

@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import { ArrowLeft, BookOpen, Users } from "lucide-react";
 import Link from "next/link";
 import { getAllProjectSlugs, getProjectBySlug, hasBlogPost } from "@/lib/mdx";
 import { mdxComponents } from "@/components/mdx/MDXComponents";
@@ -45,27 +47,26 @@ export default async function ProjectPage({
         </span>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-6">
-        {frontmatter.techStack.map((tech) => (
-          <span
-            key={tech}
-            className="smd-pill bg-white/5 border border-white/10 text-slate-300"
-          >
-            {tech}
-          </span>
-        ))}
-      </div>
+      {frontmatter.team && frontmatter.team.length > 0 && (
+        <div className="flex items-center gap-2 text-xs font-mono text-slate-300 mb-6 bg-white/5 border border-white/10 rounded-lg px-3.5 py-2 w-fit">
+          <Users size={14} className="text-cyan-400 shrink-0" />
+          <span className="opacity-60">Team:</span>
+          <span className="opacity-90">{frontmatter.team.join(", ")}</span>
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-3 mb-12">
-        <a
-          href={frontmatter.githubUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="capacitive-btn text-xs py-2.5 px-4"
-        >
-          <GithubIcon size={16} />
-          View on GitHub
-        </a>
+        {frontmatter.githubUrl && slug !== "geodrain-ai" && (
+          <a
+            href={frontmatter.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="capacitive-btn text-xs py-2.5 px-4"
+          >
+            <GithubIcon size={16} />
+            View on GitHub
+          </a>
+        )}
 
         {hasStory && (
           <Link
@@ -79,7 +80,16 @@ export default async function ProjectPage({
       </div>
 
       <article>
-        <MDXRemote source={content} components={mdxComponents} />
+        <MDXRemote
+          source={content}
+          components={mdxComponents}
+          options={{
+            mdxOptions: {
+              remarkPlugins: [remarkMath],
+              rehypePlugins: [rehypeKatex],
+            },
+          }}
+        />
       </article>
     </main>
   );

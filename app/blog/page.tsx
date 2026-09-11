@@ -63,7 +63,7 @@ export default function BlogIndexPage() {
                 </div>
               </div>
 
-              <h2 className="text-xl font-medium mb-2 group-hover:text-blue-400 transition-colors">
+              <h2 className="text-xl font-medium mb-2 group-hover:text-emerald-400 transition-colors">
                 {post.title}
               </h2>
               <p className="text-sm opacity-70 leading-relaxed mb-4">{post.summary}</p>

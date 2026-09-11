@@ -1,26 +1,119 @@
 ---
-title: "Building AgeisLink: Zero-Cloud Two-Wheeler Crash Detection"
+title: "AegisLink & Aegis_Finmed: From Two-Wheeler Crash Telematics to Instant Parametric Insurance"
 slug: "ageislink"
 type: "project"
-date: "2026"
-summary: "The narrative behind building a zero-internet crash detection system for highway riders using ESP32, IMU sensor fusion, and BLE."
-readingTime: "4 min read"
+date: "2026-05"
+summary: "An edge ESP32 crash-detection system for two-wheelers integrated with a dual-console web platform that bridges golden-hour trauma dispatch with zero-touch parametric insurance payouts."
+readingTime: "6 min read"
 relatedSlug: "ageislink"
-tags: ["ESP32", "MPU6050", "Embedded C++", "BLE", "IoT Safety"]
+tags: ["ESP32", "MPU6050", "Flutter", "InsurTech", "Parametric Insurance", "IoT", "WebSockets"]
+team: ["Sai Prasath P", "Eswarnath Jeyaram K", "Simon Jaques Mascarenhas", "Prithish S"]
 ---
 
-## Why We Built This
+<div className="p-4 rounded-xl border border-cyan-500/30 bg-[#0A131A] mb-8 font-mono text-xs space-y-1">
+  <div className="flex items-center gap-2 text-cyan-400 font-semibold">
+    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+    <span>SYSTEM TELEMETRY & MULTI-DISCIPLINARY TEAM</span>
+  </div>
+  <div className="text-white/80"><span className="text-white/40">Hardware & Firmware Lead:</span> Dhinesh Karthick R</div>
+  <div className="text-white/80"><span className="text-white/40">Team Members:</span> Sai Prasath P, Eswarnath Jeyaram K, Simon Jaques Mascarenhas, Prithish S</div>
+  <div className="text-white/80"><span className="text-white/40">Edge Architecture:</span> ESP32 Microcontroller + MPU-6050 6-Axis IMU + BLE 5.0</div>
+  <div className="text-white/80"><span className="text-white/40">Software Stack:</span> Flutter (Client), Flask-SocketIO, WebSockets, Chart.js, Parametric Smart Engine</div>
+  <div className="text-white/80"><span className="text-white/40">Repositories:</span> <a href="https://github.com/dhineshkarthick16/AegisLink" target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline hover:text-cyan-300 mr-3">github.com/dhineshkarthick16/AegisLink</a> <a href="https://github.com/dhineshkarthick16/Aegis_Finmed" target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline hover:text-emerald-300">github.com/dhineshkarthick16/Aegis_Finmed</a></div>
+</div>
 
-Highway commuting on two-wheelers in rural corridors is plagued by dead zones. Conventional emergency notification solutions rely on active cellular data to ping servers before an alert can even be parsed. We asked: *Can we detect a severe collision and trigger dispatch purely on-edge without touching the cloud?*
+## Act I: The Highway Dilemma & Crash Detection Hardware
 
-## The Prototyping Journey
+Two-wheeler commuters and gig delivery riders represent over 70% of road traffic accidents in developing economies. In highway stretches and rural transit corridors, riders who lose control frequently skid into roadside ditches or off-carriageway zones—unnoticed by passing vehicles.
 
-We wired an MPU6050 6-axis IMU to an ESP32 dev kit. The primary challenge was distinguishing intentional emergency maneuvers (aggressive swerving, hard braking) from true impact and rollover events.
+In trauma medicine, the first 60 minutes following a severe collision—the **Golden Hour**—determines whether an injured victim survives. Traditional emergency dispatch depends entirely on manual reporting: a conscious bystander must stop, pull out a phone, and dial emergency services. If the rider is unconscious and unattended, the Golden Hour vanishes.
 
-### The Protocol Hiccup
+To eliminate this human dependency, we developed **AegisLink**, an ultra-low-power edge hardware module mounted to the chassis:
 
-During bench testing, our companion mobile app was waiting on a multi-field CSV telemetry string, but the micro-controller emitted a bare `CRASH` flag on interrupt. This led to silent drops during early tests until we standardized a lightweight binary serialization format over BLE GATT characteristics.
+```
+[ MPU-6050 IMU ] (3-Axis Accelerometer + 3-Axis Gyro)
+       |
+       | I2C High-Speed Polling (200 Hz)
+       v
+[ ESP32 Xtensa Dual-Core ]
+       |-- Jerk Vector Magnitude: ||d(a)/dt|| > J_thresh
+       |-- Post-Impact Tilt: Roll/Pitch angle > 65 deg sustained
+       v
+[ BLE 5.0 GATT Advertising ]
+       |
+       v
+[ Flutter Mobile Gateway ] ---> Live GPS Coordinates + GSM SOS Dispatch
+```
 
-## Next Steps
+### Edge Crash Discrimination Algorithm
+A critical hurdle in motorcycle telemetry is distinguishing intentional high-g events (aggressive swerving around potholes, hard braking, or wheelies) from catastrophic impacts and rollovers.
 
-We are currently calibrating the complementary filter algorithms and exploring micro-LoRa beacons for true off-grid long-range distress signalling.
+AegisLink uses a two-stage filter:
+1. **Jerk Magnitude Spike:** Evaluates the time-derivative of acceleration ($||\Delta \mathbf{a}/\Delta t||$). Collision events exhibit near-instantaneous momentum dissipation exceeding $8g-12g$.
+2. **Sustained Angular Inversion:** If an acceleration spike occurs, the system samples gyro tilt orientation for 1.5 seconds. If the vehicle angle remains past $65^\circ$ without self-righting, an emergency crash state is triggered.
+
+The companion Flutter mobile app continuously monitors the ESP32 via Bluetooth Low Energy GATT characteristics. When a crash interrupt fires, the app acquires high-precision GPS coordinates and transmits an automated SOS packet.
+
+---
+
+## Act II: The Financial & Insurance Impasse
+
+While testing AegisLink, we identified a critical real-world failure mode that tech solutions routinely overlook: **The Emergency Room Deposit Dilemma**.
+
+When an ambulance transports an injured rider to a private hospital or trauma ICU:
+- Hospitals require an upfront cashless authorization or immediate financial deposit before mobilizing trauma teams, booking operating theaters, or administering critical blood transfusions.
+- Traditional insurance claims are paper-bound: they demand physical police First Information Reports (FIR), on-site surveyor inspections, original hospital itemized bills, and weeks of claims adjuster scrutiny.
+
+For a gig worker or daily commuter without liquid savings in their bank account, emergency medical care is delayed precisely when seconds count.
+
+---
+
+## Act III: The Evolution into Aegis_Finmed
+
+We asked: **What if hardware-verified telemetry could simultaneously dispatch medical help and instantly approve parametric insurance payouts?**
+
+This insight birthed **Aegis_Finmed**, an institutional dual-console web system designed to bridge real-time trauma logistics with instant parametric claims settlement:
+
+```
+                  +--------------------------------+
+                  |  AegisLink Edge Hardware Node  |
+                  |  [Peak G: 9.2g | Tilt: 74 deg] |
+                  +--------------------------------+
+                                  |
+                                  v
+                  +--------------------------------+
+                  |   Real-Time WebSocket Broker   |
+                  +--------------------------------+
+                                  |
+        +-------------------------+-------------------------+
+        |                                                   |
+        v                                                   v
++-----------------------------+     +-------------------------------+
+|   Hospital Trauma Console   |     |   InsurTech Claims Console    |
+| - Priority Inbound Queue    |     | - Automated Parametric Trigger|
+| - Live Ambulance GPS Map    |     | - Scrubbable MPU Sensor Graph |
+| - Pre-Arrival Physics Sheet |     | - Algorithmic Fraud Scoring   |
+| - Cashless Admission Slip   |     | - Instant UPI Hospital Advance|
++-----------------------------+     +-------------------------------+
+```
+
+### 1. Hospital Emergency Trauma Console
+Modeled around a hospital's acute trauma desk:
+- **Live ICU Capacity Monitor:** Real-time visibility into available trauma bays, ventilators, and on-duty neuro/orthopedic leads.
+- **Priority Inbound Emergency Feed:** Telemetry-ranked queue sorted by Golden-Hour urgency and crash severity.
+- **Pre-Arrival Trauma Physics Sheet:** Before the ambulance arrives, surgeons view the collision kinematics: impact speed ($52\text{ km/h}$), peak decelerative force ($9.2g$), and orientation angle ($74^\circ$), allowing them to prepare appropriate cervical collars, thoracic blood packs, and imaging suites.
+- **One-Click Action Dock:** Immediate reservation of trauma bays and issuance of a pre-authorized cashless admission slip.
+
+### 2. InsurTech & Finance Console (ACKO × AegisLink)
+Reimagines motor/health insurance as a zero-touch parametric smart protocol:
+- **Auto-Verified Parametric Triggers:** If sensor physics exceed verified collision thresholds ($G > 8.0$ and persistent rollover), the claim is automatically approved without waiting for an adjuster.
+- **Interactive MPU Sensor Waveform:** Claims analysts can scrub through high-frequency 3-axis accelerometer and gyro data leading up to impact and export the raw CSV log.
+- **Algorithmic Fraud Verification:** Correlates smartphone speed, road segment topography, and vehicle edge cryptographic signatures to eliminate fraudulent claims.
+- **Instant Micro-Advance Payout:** Dispatches direct UPI pre-authorization funds to the empanelled hospital within seconds of ambulance arrival.
+
+### 3. Real-Time "God Mode" Incident Simulation
+The platform features a live demonstration switcher that broadcasts simulated crash incidents via Flask-SocketIO. As a test packet is transmitted, both the hospital trauma desk and the insurance claims queue update simultaneously with zero latency.
+
+Check out the full repository and dashboard source code on GitHub:
+👉 [dhineshkarthick16/AegisLink](https://github.com/dhineshkarthick16/AegisLink)
+👉 [dhineshkarthick16/Aegis_Finmed](https://github.com/dhineshkarthick16/Aegis_Finmed)

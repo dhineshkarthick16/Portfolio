@@ -6,6 +6,7 @@ export interface Project {
   techStack: string[];
   githubUrl: string;
   status: "Completed" | "In Progress" | "Future";
+  team?: string[];
 }
 
 export interface Education {
@@ -57,4 +58,5 @@ export interface BlogPost {
   readingTime?: string;
   relatedSlug?: string;
   tags?: string[];
+  team?: string[];
 }

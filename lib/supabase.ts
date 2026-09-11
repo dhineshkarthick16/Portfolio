@@ -25,6 +25,8 @@ export interface CompetitionRow {
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+// On the server, prioritize SUPABASE_SERVICE_ROLE_KEY to bypass RLS and count all competitions
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
 
 export const QUALIFYING_RESULTS = [
   "Winner",
@@ -129,7 +131,7 @@ export function sortAchievements(items: Achievement[]): Achievement[] {
  * Falls back to static `data/achievements.ts` if Supabase is unconfigured, empty, or unavailable.
  */
 export async function getQualifyingAchievements(): Promise<Achievement[]> {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
     return sortAchievements(fallbackAchievements);
   }
 
@@ -139,8 +141,8 @@ export async function getQualifyingAchievements(): Promise<Achievement[]> {
       `${SUPABASE_URL}/rest/v1/competitions?result=in.(${filterValues})&select=id,name,organizer,result,position,prize,created_at,registration_deadline,rounds(id,name,date,round_order,status)`,
       {
         headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
         },
         cache: "no-store", // Avoid caching so updates show immediately on reload without redeploy
       }
@@ -181,3 +183,51 @@ export async function getQualifyingAchievements(): Promise<Achievement[]> {
 
 // Alias for backwards compatibility
 export const getFeaturedAchievements = getQualifyingAchievements;
+
+/**
+ * Counts all hackathons / competitions registered in the HackTracker backend,
+ * without filtering by outcome, so QuickStats displays the full tally.
+ */
+export async function getTotalHackathonsCount(): Promise<number> {
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    return fallbackAchievements.length;
+  }
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/competitions?select=id`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        Prefer: "count=exact",
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return fallbackAchievements.length;
+    }
+
+    const contentRange = res.headers.get("content-range");
+    if (contentRange) {
+      const parts = contentRange.split("/");
+      if (parts.length > 1) {
+        const total = parseInt(parts[1], 10);
+        if (!isNaN(total) && total > 0) return total;
+      }
+    }
+
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      return data.length;
+    }
+
+    return fallbackAchievements.length;
+  } catch (err: any) {
+    if (err?.digest === "DYNAMIC_SERVER_USAGE") {
+      throw err;
+    }
+    console.warn("Failed to fetch total competitions count from Supabase:", err);
+    return fallbackAchievements.length;
+  }
+}
+

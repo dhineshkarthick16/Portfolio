@@ -4,15 +4,7 @@ import matter from "gray-matter";
 import { Project, BlogPost } from "@/types";
 
 const projectsDir = path.join(process.cwd(), "content/projects");
-const knowledgeHubDir = path.join(process.cwd(), "content/knowledge-hub");
 const blogDir = path.join(process.cwd(), "content/blog");
-
-export interface Article {
-  title: string;
-  slug: string;
-  description: string;
-  date: string;
-}
 
 export function getAllProjectSlugs(): string[] {
   if (!fs.existsSync(projectsDir)) return [];
@@ -38,27 +30,6 @@ export function getAllProjects(): Project[] {
     });
 }
 
-export function getAllArticleSlugs(): string[] {
-  if (!fs.existsSync(knowledgeHubDir)) return [];
-  return fs
-    .readdirSync(knowledgeHubDir)
-    .filter((f) => f.endsWith(".mdx"))
-    .map((f) => f.replace(/\.mdx$/, ""));
-}
-
-export function getArticleBySlug(slug: string): { frontmatter: Article; content: string } {
-  const filePath = path.join(knowledgeHubDir, `${slug}.mdx`);
-  const fileContent = fs.readFileSync(filePath, "utf8");
-  const { data, content } = matter(fileContent);
-  return { frontmatter: data as Article, content };
-}
-
-export function getAllArticles(): Article[] {
-  return getAllArticleSlugs()
-    .map((slug) => getArticleBySlug(slug).frontmatter)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-}
-
 export function getAllBlogSlugs(): string[] {
   if (!fs.existsSync(blogDir)) return [];
   return fs
@@ -77,6 +48,7 @@ export function getBlogPostBySlug(slug: string): { frontmatter: BlogPost; conten
 export function getAllBlogPosts(): BlogPost[] {
   return getAllBlogSlugs()
     .map((slug) => getBlogPostBySlug(slug).frontmatter)
+    .filter((p) => p.type === "project" || p.type === "experience")
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 

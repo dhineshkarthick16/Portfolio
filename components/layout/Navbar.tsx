@@ -6,10 +6,13 @@ import { Menu, X, Cpu } from "lucide-react";
 import { siteConfig } from "@/data/site";
 
 const navLinks = [
-  { label: "Projects", href: "/#projects" },
-  { label: "Certifications", href: "/#certifications" },
+  { label: "About", href: "/#about" },
+  { label: "Skills", href: "/#skills" },
   { label: "Experience", href: "/#experience" },
+  { label: "Projects", href: "/#projects" },
   { label: "Achievements", href: "/#achievements" },
+  { label: "Certifications", href: "/#certifications" },
+  { label: "Education", href: "/#education" },
   { label: "Stories", href: "/blog" },
   { label: "Contact", href: "/#contact" },
 ];
@@ -25,10 +28,6 @@ export function Navbar() {
             <Cpu size={15} />
           </div>
           <span className="font-mono text-sm tracking-tight">{siteConfig.name}</span>
-          <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 ml-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            SYS_OK
-          </span>
         </Link>
 
         {/* Desktop Links */}

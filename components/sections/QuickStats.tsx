@@ -8,25 +8,44 @@ interface QuickStatsProps {
   hackathonsCount?: number;
   projectsCount?: number;
   internshipsCount?: number;
+  certificationsCount?: number;
 }
 
 export function QuickStats({
-  hackathonsCount = 0,
+  hackathonsCount = 15,
   projectsCount = 10,
   internshipsCount = 1,
+  certificationsCount = 6,
 }: QuickStatsProps) {
   const effectiveProjectsCount = Math.max(10, projectsCount);
+  const effectiveHackathonsCount = Math.max(15, hackathonsCount);
 
+  // Strict order: (Internship, Projects, Hackathons, Certifications)
   const stats = [
-    { value: 200, suffix: "+", label: "LeetCode Problems", code: "ALGO_01" },
     {
       value: internshipsCount,
       suffix: "",
       label: internshipsCount === 1 ? "Internship" : "Internships",
       code: "CADENCE_COE",
     },
-    { value: hackathonsCount, suffix: "+", label: "Hackathons", code: "HACK_REG" },
-    { value: effectiveProjectsCount, suffix: "+", label: "Technical Projects", code: "PROJECTS_REG" },
+    {
+      value: effectiveProjectsCount,
+      suffix: "+",
+      label: "Technical Projects",
+      code: "PROJECTS_REG",
+    },
+    {
+      value: effectiveHackathonsCount,
+      suffix: "+",
+      label: "Hackathons",
+      code: "HACK_REG",
+    },
+    {
+      value: certificationsCount,
+      suffix: "",
+      label: certificationsCount === 1 ? "Certification" : "Certifications",
+      code: "VERIF_CERTS",
+    },
   ];
 
   return (
@@ -43,7 +62,7 @@ export function QuickStats({
           >
             {/* IC Pin 1 Orientation Notch */}
             <div className="chip-notch" title="Pin 1 Index Marker" />
-            {/* Circuit Trace Substrate (Modeled after Image 1) */}
+            {/* Circuit Trace Substrate */}
             <PcbCardTraces variant="cyan" />
 
             <div className="relative z-10">

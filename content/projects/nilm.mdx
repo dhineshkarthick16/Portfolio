@@ -1,28 +1,33 @@
 ---
 title: "Non-Intrusive Load Monitoring (NILM)"
 slug: "nilm"
-description: "An ESP32-based non-intrusive load monitoring system that identifies appliance activity from a single current-sensing point, currently in active development."
+description: "An ESP32-based non-intrusive load monitoring system combining SCT-013 current transformers, LM358 virtual ground conditioning, and 4N35 zero-crossing phase alignment for power factor and load disaggregation."
 coverImage: "/images/projects/nilm-cover.png"
-techStack: ["ESP32", "SCT-013", "LM358", "4N35"]
+techStack: ["ESP32", "SCT-013", "LM358", "4N35", "FreeRTOS", "Signal Processing"]
 githubUrl: "https://github.com/dhineshkarthick16/Non-Intrusive-Load-Monitoring"
 status: "In Progress"
 ---
 
 ## Overview
 
-A non-intrusive load monitoring (NILM) system built around an ESP32 and a
-current-transformer sensing front-end, designed to detect and classify
-appliance activity from a single monitoring point.
+A Non-Intrusive Load Monitoring (NILM) platform engineered around an ESP32 dual-core microcontroller and an analog signal conditioning front-end. The system samples aggregate AC mains current non-invasively, synchronizes with voltage zero-crossings, and extracts true RMS metrics and power factor ($\cos \theta$) to decompose individual appliance energy consumption from a single measurement point.
 
-## Hardware
+## Hardware Front-End & Conditioning
 
-- ESP32
-- SCT013-100A/1V (current transformer)
-- LM358 (op-amp signal conditioning)
-- 4N35 (optocoupler)
+- **Current Sensing:** SCT-013 non-invasive current transformer clamp (100A/50mA) with burden resistor converting induced secondary current to AC voltage.
+- **Active DC Bias (+1.65V):** LM358 rail-to-rail operational amplifier configured as a unity-gain buffer to establish a low-impedance virtual ground, centering AC waveforms within the ESP32's 0V–3.3V ADC input window.
+- **Galvanic Zero-Crossing Detection:** 4N35 optocoupler isolated from high-voltage line, generating digital interrupt pulses on mains voltage zero crossings for precise phase-angle alignment.
+- **Compute:** ESP32 Xtensa Dual-Core 32-bit MCU (Core 0: DMA/FreeRTOS continuous ADC sampling; Core 1: True RMS and power factor extraction).
 
-## Project Progress
+## Project Roadmap
 
-**✅ Phase 1 — Signal Conditioning Circuit**
-- ADC testing
-- CT (current transformer) verification
+- **✅ Phase 1 — Signal Conditioning & Phase Alignment (Current):**
+  - LM358 +1.65V rail buffer design and noise decoupling
+  - SCT-013 current calibration across dynamic loads
+  - 4N35 optocoupler zero-crossing interrupt timing
+  - FreeRTOS dual-core task segregation for high-frequency sampling without jitter
+  - True RMS current ($I_{RMS}$), apparent power ($S$), and power factor ($\text{PF} = \cos \theta$) extraction
+- **🚧 Phase 2 — Edge ML Load Disaggregation:**
+  - Micro-transient turn-on signature library (inrush peaks, $dI/dt$, harmonic distortion)
+  - Quantized TinyML edge classifier (1D-CNN or k-NN) for real-time appliance identification
+  - Real-time energy telemetry streaming

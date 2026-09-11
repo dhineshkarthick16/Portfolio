@@ -1,20 +1,118 @@
 ---
-title: "Disaggregating Power: Inside Non-Intrusive Load Monitoring"
+title: "Disaggregating the Grid: Real-Time Current Sensing & Phase Alignment in NILM"
 slug: "nilm"
 type: "project"
-date: "2025"
-summary: "Extracting individual appliance electrical signatures from a single smart meter feed using edge AI."
-readingTime: "3 min read"
+date: "2026-07"
+summary: "An ESP32-powered Non-Intrusive Load Monitoring front-end combining SCT-013 current transformers, LM358 DC bias conditioning, and 4N35 zero-crossing phase alignment for true power factor extraction."
+readingTime: "5 min read"
 relatedSlug: "nilm"
-tags: ["Edge AI", "Signal Processing", "Current Sensing", "IoT"]
+tags: ["ESP32", "Analog Conditioning", "Signal Processing", "Current Sensing", "Power Factor", "NILM", "IoT"]
 ---
 
-## Project Story
+<div className="p-4 rounded-xl border border-cyan-500/30 bg-[#0A131A] mb-8 font-mono text-xs space-y-1">
+  <div className="flex items-center gap-2 text-cyan-400 font-semibold">
+    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+    <span>HARDWARE ARCHITECTURE & TELEMETRY</span>
+  </div>
+  <div className="text-white/80"><span className="text-white/40">Role:</span> Embedded Hardware & Firmware Designer</div>
+  <div className="text-white/80"><span className="text-white/40">Microcontroller:</span> ESP32 Dual-Core Xtensa LX6 (FreeRTOS Core 0: Sampling / Core 1: DSP)</div>
+  <div className="text-white/80"><span className="text-white/40">Analog Front-End:</span> SCT-013 Current Transformer + LM358 Rail Buffer + 4N35 Optocoupler</div>
+  <div className="text-white/80"><span className="text-white/40">Repository:</span> <a href="https://github.com/dhineshkarthick16/Non-Intrusive-Load-Monitoring" target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline hover:text-cyan-300">github.com/dhineshkarthick16/Non-Intrusive-Load-Monitoring</a></div>
+</div>
 
-Non-Intrusive Load Monitoring (NILM) shifts the paradigm of smart metering from sub-metering every appliance to decomposing high-frequency aggregated current and voltage waveforms.
+## The Vision: Intelligence from a Single Clamp
 
-## The Engineering Behind It
+Traditional energy auditing faces an expensive dilemma: either install dedicated smart plugs behind every single home appliance—costing hundreds of dollars and cluttering wall outlets—or settle for a dumb whole-home utility meter that provides only an aggregated monthly kilowatt-hour bill with zero appliance breakdown.
 
-We captured high-speed current transformer (CT) sensor data to build transient turn-on signatures for inductive and resistive loads. 
+**Non-Intrusive Load Monitoring (NILM)** breaks this tradeoff. By clamping a single non-invasive sensor at the main electrical distribution panel, NILM analyzes the micro-transients, harmonic distortions, and phase angles of the aggregate electrical waveform to decompose individual loads—distinguishing when a refrigerator compressor cycles on versus when an induction motor spins up.
 
-*Detailed post and dataset benchmarks coming soon.*
+---
+
+## Hardware Conditioning Circuit
+
+The primary challenge in mains AC electrical sensing on modern 3.3V microcontrollers (like the ESP32) is that AC current naturally alternates symmetrically between positive and negative voltages. Feeding a negative voltage directly into an ESP32 ADC pin will clamp the internal ESD protection diodes and damage the silicon.
+
+```
+       Mains AC Phase Line
+               |
+         [ SCT-013 CT ] (Current Transformer Clamp)
+               |
+               v
+       +-----------------------------------------------+
+       |             Burden Resistor (R_b)             |
+       |  Converts secondary induced mA to AC voltage  |
+       +-----------------------------------------------+
+               |
+               v
+       +-----------------------------------------------+
+       |       LM358 Virtual Ground Bias (+1.65V)      |
+       |  Op-amp buffer shifts AC sine to [0V - 3.3V]  |
+       +-----------------------------------------------+
+               |
+               v
+       +-----------------------------------------------+
+       |             ESP32 ADC Input (GPIO 34)         |
+       |          FreeRTOS DMA Continuous Sampling     |
+       +-----------------------------------------------+
+```
+
+### 1. SCT-013 Current Sensing & Burden Resistor
+The non-invasive **SCT-013** current transformer clamps around the isolated live conductor. Depending on the model (e.g., 100A/50mA), the secondary coil outputs a small alternating current proportional to primary line current. An onboard burden resistor $R_b$ translates this current into a measurable AC voltage drop.
+
+### 2. LM358 Active DC Bias Offset (+1.65V)
+To center the AC signal cleanly within the ESP32's $0\text{V} - 3.3\text{V}$ input range:
+- A precision resistor divider establishes a stable $+1.65\text{V}$ midpoint.
+- The **LM358 operational amplifier** is configured as a unity-gain voltage follower (buffer) to provide an ultra-low impedance virtual ground.
+- The AC signal from the CT is AC-coupled via a high-grade capacitor, oscillating gracefully around $+1.65\text{V}$ ($0\text{V}$ to $+3.3\text{V}$ peak-to-peak).
+
+### 3. 4N35 Optocoupler Zero-Crossing Detector
+Apparent current alone cannot distinguish between resistive heaters and inductive motors; power factor ($\cos \theta$) is critical:
+- A **4N35 optocoupler** is tied across the mains AC voltage through a high-voltage current-limiting resistor network.
+- As the voltage sine wave crosses the zero-voltage threshold, the optocoupler fires an isolated digital pulse directly to an ESP32 hardware interrupt pin.
+- This creates total galvanic isolation, protecting the microcontroller from high-voltage line transients while establishing the exact time zero ($t_0$) of the voltage wave.
+
+---
+
+## Dual-Core Firmware & Phase Alignment
+
+The ESP32 firmware leverages its dual-core architecture running FreeRTOS:
+
+```
+[Mains Voltage] ---> 4N35 Zero Cross ---> GPIO Interrupt (Core 0)
+                                                 |
+[Current Signal] ---> LM358 Shift ---> ADC Sampling (Core 0)
+                                                 |
+                       FreeRTOS RingBuffer FIFO  |
+                                                 v
+                       [Core 1: DSP Engine & Metric Extraction]
+                       - True RMS Current (I_RMS)
+                       - Phase Delay: Delta_t = t_I_zero - t_V_zero
+                       - Power Factor: cos(theta) = cos(2*pi*f*Delta_t)
+                       - Real Power: P = V_RMS * I_RMS * PF
+```
+
+1. **Core 0 (Ultra-Fast Acquisition):** Executes high-rate ADC sampling (1000+ samples per $50\text{Hz}$ cycle) in a deterministic loop and captures the hardware timestamp of the 4N35 zero-crossing pulse.
+2. **Core 1 (DSP & Power Factor Calculation):** Calculates the true root-mean-square current:
+   $$I_{RMS} = \sqrt{\frac{1}{N} \sum_{i=0}^{N-1} (I[i] - I_{offset})^2}$$
+   By subtracting the zero-crossing timestamp of the current waveform from the voltage zero-crossing timestamp ($\Delta t = t_I - t_V$), the phase angle $\theta = 2\pi f \Delta t$ is extracted, yielding the true **Power Factor** $\text{PF} = \cos \theta$.
+
+---
+
+## Engineering Roadmap
+
+```
+Phase 1: Analog Front-End & Calibration (Current Phase)
+  ├── [x] Design LM358 +1.65V low-impedance rail buffer
+  ├── [x] Calibrate SCT-013 linearity across 0.5A - 30A loads
+  ├── [x] Validate 4N35 isolated zero-cross timing on oscilloscope
+  └── [x] FreeRTOS dual-core ADC sampling and serial telemetry
+Phase 2: Edge ML Appliance Disaggregation (Upcoming)
+  ├── [ ] Transient turn-on feature extraction (inrush peaks, dI/dt)
+  ├── [ ] Edge TinyML classifier (1D-CNN or k-NN) on ESP32
+  └── [ ] Automated multi-appliance energy dashboard
+```
+
+With clean, phase-aligned voltage and current signatures captured at high sample rates, the platform provides the ideal foundation for edge machine learning models to detect appliance switching events in real time.
+
+Explore the circuit schematics, calibration firmware, and DSP math in the project repository:
+👉 [dhineshkarthick16/Non-Intrusive-Load-Monitoring](https://github.com/dhineshkarthick16/Non-Intrusive-Load-Monitoring)

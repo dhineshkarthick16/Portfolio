@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, Cpu } from "lucide-react";
 import { Project } from "@/types";
 import { PcbCardTraces } from "@/components/ui/PcbCardTraces";
+import { GithubIcon } from "@/components/icons/BrandIcons";
 
 export function ProjectCard({
   project,
@@ -16,6 +17,8 @@ export function ProjectCard({
   hasStory?: boolean;
 }) {
   const isCompleted = project.status === "Completed";
+  const storyHref = hasStory ? `/blog/${project.slug}` : `/projects/${project.slug}`;
+  const hasGithub = Boolean(project.githubUrl && project.slug !== "geodrain-ai");
 
   return (
     <motion.div
@@ -27,12 +30,12 @@ export function ProjectCard({
     >
       {/* IC Pin 1 Orientation Notch */}
       <div className="chip-notch" title="Pin 1 Index Marker" />
-      {/* Circuit Trace Substrate (Modeled after Image 1) */}
+      {/* Circuit Trace Substrate */}
       <PcbCardTraces variant="cyan" />
 
       <div className="relative z-10">
         {/* Cover / Schematic Graphic Placeholder */}
-        <Link href={`/projects/${project.slug}`} className="block relative overflow-hidden">
+        <Link href={storyHref} className="block relative overflow-hidden">
           <div className="aspect-video bg-gradient-to-br from-emerald-950/25 via-[#0D1217] to-amber-950/20 relative flex items-center justify-center border-b border-white/5 group-hover:border-emerald-500/30 transition-colors">
             {/* Subtle circuit grid in project header */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(16,185,129,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(16,185,129,0.06)_1px,transparent_1px)] bg-[size:20px_20px]" />
@@ -53,16 +56,16 @@ export function ProjectCard({
                 <Cpu size={28} />
               </div>
               <span className="font-mono text-xs text-slate-300 group-hover:text-emerald-300 transition-colors tracking-widest">
-                {project.title.toUpperCase()} // RTL_CORE
+                {project.title.toUpperCase()} // STORY
               </span>
             </div>
           </div>
         </Link>
 
-        <div className="p-6 pb-2">
+        <div className="p-6 pb-4">
           {/* Header & Status */}
           <div className="flex items-center justify-between gap-3 mb-2.5">
-            <Link href={`/projects/${project.slug}`}>
+            <Link href={storyHref}>
               <h3 className="text-lg font-semibold tracking-tight group-hover:text-cyan-400 transition-colors">
                 {project.title}
               </h3>
@@ -78,46 +81,31 @@ export function ProjectCard({
             </span>
           </div>
 
-          <p className="text-sm opacity-70 mb-4 line-clamp-2 leading-relaxed">
+          <p className="text-sm opacity-70 leading-relaxed">
             {project.description}
           </p>
-
-          {/* Mini IC Component Tags */}
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {project.techStack.map((tech) => (
-              <span key={tech} className="ic-pill">
-                {tech}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
 
       {/* Action Footer with Laser Silkscreen Imprint */}
       <div className="px-6 py-3 border-t border-white/5 flex items-center justify-between text-xs font-mono">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Link
-            href={`/projects/${project.slug}`}
-            className="font-medium opacity-70 hover:opacity-100 hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+            href={storyHref}
+            className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5"
           >
-            Tech Specs <ArrowRight size={13} />
+            <BookOpen size={13} />
+            Read Story <ArrowRight size={13} />
           </Link>
-          {hasStory ? (
-            <Link
-              href={`/blog/${project.slug}`}
-              className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5"
-            >
-              <BookOpen size={13} />
-              Story →
-            </Link>
-          ) : (
+          {hasGithub && (
             <a
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5"
+              className="font-medium opacity-70 hover:opacity-100 hover:text-white transition-colors flex items-center gap-1.5"
             >
-              GitHub →
+              <GithubIcon size={13} />
+              GitHub ↗
             </a>
           )}
         </div>

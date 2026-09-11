@@ -78,21 +78,7 @@ export function Hero() {
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="text-center max-w-3xl z-10"
       >
-        {/* Hardware Status Badge */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-xs font-mono mb-6 backdrop-blur-sm shadow-sm"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span className="text-emerald-400 font-medium tracking-wider">SYS_STATUS: ONLINE</span>
-          <span className="opacity-40 text-emerald-600">•</span>
-          <span className="opacity-80 text-slate-300">VLSI • EMBEDDED • AI/IoT</span>
-        </motion.div>
+
 
         {/* Clean, Crisp Heading */}
         <h1 className="text-4xl sm:text-6xl md:text-7xl font-semibold tracking-tight text-white mb-2">

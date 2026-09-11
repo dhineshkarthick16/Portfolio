@@ -64,7 +64,7 @@ export function Contact() {
   return (
     <section id="contact" className="cv-auto-section max-w-2xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
       <SectionHeader
-        tag="// SEC_07 // TRANSMIT_MESSAGE"
+        tag="// SEC_08 // TRANSMIT_MESSAGE"
         title="Get In Touch"
         description="Have an engineering opportunity, silicon project, or question? Send a message directly."
       />

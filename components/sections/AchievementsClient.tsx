@@ -65,7 +65,7 @@ export function AchievementsClient({ items }: { items: Achievement[] }) {
   return (
     <section id="achievements" className="cv-auto-section max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
       <SectionHeader
-        tag="// SEC_06 // COMPETITIONS_&_AWARDS"
+        tag="// SEC_05 // COMPETITIONS_&_AWARDS"
         title="Achievements & Hackathons"
       />
 

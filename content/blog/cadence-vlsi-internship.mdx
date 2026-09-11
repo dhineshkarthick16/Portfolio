@@ -1,29 +1,88 @@
 ---
-title: "Behind the Silicon: My VLSI Internship at the Centre for Advanced Chip Design"
+title: "Journey Through Silicon: My VLSI Internship at Chennai Institute of Technology"
 slug: "cadence-vlsi-internship"
 type: "experience"
-date: "June 2026"
-summary: "Reflections, engineering hurdles, and hands-on learnings from designing ultra-low-power flip-flops and running DRC/LVS in Cadence Virtuoso."
+date: "2026-06"
+summary: "Reflections from an intensive VLSI internship at Chennai Institute of Technology — exploring custom transistor layout in Cadence Virtuoso and industrial digital ASIC flows."
 readingTime: "5 min read"
 relatedSlug: "cadence-vlsi-internship"
-tags: ["VLSI", "Cadence Virtuoso", "Analog IC", "Layout", "DRC/LVS"]
+tags: ["VLSI", "Cadence Virtuoso", "Digital ASIC", "Innovus", "Genus", "DRC/LVS", "Low Power"]
 ---
 
-## The Origin & Objective
+Wrapping up my final week as a VLSI intern at the **Centre for Advanced Chip Design (Centre of Excellence), Chennai Institute of Technology**, has been a milestone experience. What started as theoretical curiosity about semiconductor physics quickly transformed into an intensive, hands-on immersion into the dual realms of custom transistor layout and automated digital ASIC implementation using the industry-standard Cadence EDA toolchain.
 
-During my tenure at the Centre for Advanced Chip Design – Centre of Excellence, I immersed myself in the rigorous workflow of custom IC design. Moving beyond textbook digital logic into physical transistor sizing and layout parasitic extraction fundamentally changed how I view silicon engineering.
+---
 
-## What It Actually Looked Like
+## 1. Custom VLSI Design: From Transistors to Physical Silicon
 
-The core focus was implementing and benchmarking an ultra-low-power flip-flop topology in standard CMOS:
+In traditional digital electronics coursework, logic gates are abstract symbols with truth tables and instantaneous Boolean transitions. Custom physical design strips away that abstraction. In Cadence Virtuoso, you quickly realize that every gate is a geometric arrangement of doped silicon, polysilicon gates, dielectric oxide, and metal routing tracks where physics dictates performance.
 
-- **Schematic Capture**: Sizing PMOS and NMOS trees for minimal leakage during idle clock phases while preserving setup and hold time margins.
-- **Custom Physical Layout**: Floorplanning to minimize parasitic interconnect capacitance and resistance.
-- **Verification Loop**: Iterative Design Rule Checks (DRC) and Layout Versus Schematic (LVS) verification using Cadence Assura / Pegasus.
+### Schematic Capture & Custom Layout
+Throughout the custom design track, I designed, sized, and laid out fundamental arithmetic and logic cells from the ground up:
+- Standard logic gates (NAND, NOR, Inverters) with balanced rise/fall symmetries.
+- Half adders, full adders, and multi-bit subtractors.
+- A 4-bit **Ripple Carry Adder (RCA)**.
+- A full **4-bit Array Multiplier**.
 
-## Major Takeaways
+Designing the **4-bit Array Multiplier** was an eye-opening moment. Seeing the geometric complexity of partial product generators and carry-save adder matrices—and understanding how a straightforward binary multiplication translates into a dense, multi-layer physical layout—instilled a deep appreciation for modern VLSI floorplanning.
 
-1. **Parasitics Are Everything**: At advanced nodes, layout topology dictates power and delay as much as the schematic gate architecture.
-2. **Verification Discipline**: Passing LVS is never just about connectivity — substrate taps, well proximity effects, and antenna rules demand attention early in the layout phase.
+### Physical Verification: DRC & LVS
+Drawing polygons is only half the battle; ensuring manufacturability is the real test:
+- **Design Rule Checking (DRC)**: Resolved spacing, enclosure, and minimum-width violations across active diffusions, polysilicon, contact cuts, and metal layers.
+- **Layout Versus Schematic (LVS)**: Iterated until achieving 100% clean netlist matching, confirming that the physical layout matched the electrical intent without shorts, opens, or floating wells.
 
-*Full technical write-up and waveform analysis coming soon.*
+### Post-Layout Extraction & Waveform Analysis
+Once LVS was clean, I performed parasitic extraction ($R_{int}$ and $C_{int}$) and executed transient simulations. Comparing schematic-level waveforms with extracted post-layout waveforms provided tangible proof of how physical interconnects, sidewall capacitances, and substrate coupling degrade rise/fall times and introduce propagation delays.
+
+---
+
+## 2. Digital ASIC Design Flow: From Verilog RTL to GDSII
+
+Parallel to full-custom analog/digital layout, I explored the cell-based digital ASIC flow, mimicking the methodology used in industrial tape-outs:
+
+1. **RTL Modeling**: Developed synthesizable Verilog code for various combinational data paths and sequential control logic.
+2. **Functional Verification & Coverage**: Simulated testbenches using **Cadence NCLaunch** and performed comprehensive functional and line coverage analysis with **Cadence iRun**.
+3. **Logic Synthesis (Cadence Genus)**: Synthesized behavioral Verilog into technology-mapped gate-level netlists, optimizing for area, power, and worst-case negative slack (WNS).
+4. **Physical Implementation (Cadence Innovus)**: Transitioned the gate netlist into layout through floorplanning, power ring/stripe distribution, standard cell placement, Clock Tree Synthesis (CTS) to minimize skew, and global/detail routing.
+
+---
+
+## 3. Very Low-Power Flip-Flop (VLFF) Silicon Research
+
+One of the highlights of my time at the Centre of Excellence was researching and implementing a **Very Low-Power Flip-Flop (VLFF)** architecture.
+
+In modern edge processors and IoT sensor nodes, the clock tree and local storage elements account for 30% to 50% of the total digital dynamic power. By investigating topologies that minimize internal clock-node switching activity while maintaining robust setup and hold margins, I implemented the custom schematic and layout in a 180nm CMOS process, achieving clean DRC/LVS and an extracted post-layout clock-to-Q delay of **216.7 ps** (with a measured D-to-clock delay of **99.217 ps**).
+
+The complete documentation, schematic diagrams, transient waveforms, and literature benchmarks against 65nm reference papers are compiled in my technical project report:
+
+<div className="my-8 p-6 rounded-xl border border-emerald-500/30 bg-[#0D1318] relative overflow-hidden group">
+  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <div className="flex items-center gap-2 mb-1">
+        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+        <span className="text-xs font-mono text-emerald-400 tracking-wider uppercase">Technical Report Document</span>
+      </div>
+      <h3 className="text-lg font-semibold text-white">VLFF (Very Low Power Flip-Flop) Implementation Report</h3>
+      <p className="text-sm opacity-70 mt-1 max-w-xl">
+        Complete engineering documentation covering schematic capture, symbol creation, functional verification, post-layout delay extraction (216.7 ps Clk-Q), and comparative literature benchmarks.
+      </p>
+    </div>
+    <a
+      href="https://docs.google.com/document/d/1803pUIkIiorx2D4ecUMv7YKFnaFrutkd/edit?usp=sharing"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 hover:text-emerald-200 font-mono text-xs transition-all shrink-0 cursor-pointer"
+    >
+      <span>Open Google Doc</span>
+      <span className="text-sm font-sans">↗</span>
+    </a>
+  </div>
+</div>
+
+---
+
+## 4. Connecting the Dots: The Full Silicon Journey
+
+The most rewarding takeaway from this internship was seeing the complete journey of a design—watching an abstract idea materialize into Verilog RTL, get synthesized into standard cells, and ultimately transform into routed polygons on silicon layers. Seeing how each stage links to the next demystified the chip design process and made physical implementation truly come alive.
+
+A heartfelt thank you to my mentors, faculty members, and peers at Chennai Institute of Technology for their continuous support, code reviews, and guidance throughout this journey.

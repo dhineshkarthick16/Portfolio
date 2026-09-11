@@ -9,19 +9,22 @@ import { Certifications } from "@/components/sections/Certifications";
 import { Projects } from "@/components/sections/Projects";
 import { Experience } from "@/components/sections/Experience";
 import { Achievements } from "@/components/sections/Achievements";
-import { KnowledgeHubPreview } from "@/components/sections/KnowledgeHubPreview";
 import { Resume } from "@/components/sections/Resume";
 import { Contact } from "@/components/sections/Contact";
 import { ScrollProgressBus } from "@/components/ui/ScrollProgressBus";
 import { PcbTraces } from "@/components/ui/PcbTraces";
-import { getQualifyingAchievements } from "@/lib/supabase";
+import { getQualifyingAchievements, getTotalHackathonsCount } from "@/lib/supabase";
 import { getAllProjects } from "@/lib/mdx";
 import { experience } from "@/data/experience";
+import { certifications } from "@/data/certifications";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const achievements = await getQualifyingAchievements();
+  const [achievements, totalHackathons] = await Promise.all([
+    getQualifyingAchievements(),
+    getTotalHackathonsCount(),
+  ]);
   const projects = getAllProjects();
 
   return (
@@ -33,17 +36,17 @@ export default async function Home() {
         <Hero />
         <About />
         <QuickStats
-          hackathonsCount={achievements.length}
+          hackathonsCount={Math.max(15, totalHackathons)}
           projectsCount={Math.max(10, projects.length)}
           internshipsCount={experience.length}
+          certificationsCount={certifications.length}
         />
-        <Education />
         <Skills />
-        <Certifications />
-        <Projects />
         <Experience />
+        <Projects />
         <Achievements items={achievements} />
-        <KnowledgeHubPreview />
+        <Certifications />
+        <Education />
         <Resume />
         <Contact />
       </main>

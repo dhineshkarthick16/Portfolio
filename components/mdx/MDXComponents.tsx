@@ -1,6 +1,8 @@
 import type { MDXComponents } from "mdx/types";
+import { VlffLiveReport } from "@/components/blog/VlffLiveReport";
 
 export const mdxComponents: MDXComponents = {
+  VlffLiveReport: () => <VlffLiveReport />,
   h2: (props) => <h2 className="text-2xl font-semibold tracking-tight mt-12 mb-4" {...props} />,
   h3: (props) => <h3 className="text-xl font-medium mt-8 mb-3" {...props} />,
   p: (props) => <p className="text-base opacity-80 leading-relaxed mb-4" {...props} />,
