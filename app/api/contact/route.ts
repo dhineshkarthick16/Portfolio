@@ -57,6 +57,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Input exceeds allowed length." }, { status: 400 });
     }
 
+    if (!resend) {
+      console.warn("RESEND_API_KEY is not configured in environment variables.");
+      return NextResponse.json(
+        { error: "Contact service is temporarily unconfigured. Please email directly." },
+        { status: 503 }
+      );
+    }
+
     await resend.emails.send({
       from: "Portfolio Contact <onboarding@resend.dev>", // replace with a verified domain sender
       to: siteConfig.email,

@@ -56,7 +56,7 @@ export function VlffLiveReport() {
                   LIVE
                 </span>
               </div>
-              <p className="text-[11px] font-mono opacity-50 mt-0.5">
+              <p className="text-[11px] font-mono opacity-50 mt-0.5" suppressHydrationWarning>
                 Target Doc: Very Low Power Flip-Flop Report // {lastRefreshedTime ? `Synced at ${lastRefreshedTime}` : "Connecting..."}
               </p>
             </div>
@@ -92,9 +92,9 @@ export function VlffLiveReport() {
           <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-white">
             {data?.title || "VLFF (Very Low Power Flip-Flop) Implementation Report"}
           </h3>
-          <p className="text-sm opacity-70 mt-1 leading-relaxed">
+          <span className="text-sm opacity-70 mt-1 leading-relaxed block">
             Direct real-time reflection of the technical report document. When changes are made in the source Google Doc, they synchronize dynamically to this section.
-          </p>
+          </span>
         </div>
 
         {/* Dynamic Telemetry Metrics Cards */}
