@@ -3,7 +3,16 @@ title: "EdgeWatt — ESP32-Based NILM System"
 slug: "nilm"
 description: "A low-cost, edge-resident energy disaggregation system leveraging 13-dimensional steady-state feature engineering, real-time thermal drift calibration, and sub-millisecond ensemble classification."
 coverImage: "/images/projects/nilm-cover.png"
-techStack: ["ESP32", "FreeRTOS", "TinyML / Scikit-Learn", "SCT-013", "LM358", "Streamlit", "DSP"]
+techStack:
+  [
+    "ESP32",
+    "FreeRTOS",
+    "TinyML / Scikit-Learn",
+    "SCT-013",
+    "LM358",
+    "Streamlit",
+    "DSP",
+  ]
 githubUrl: "https://github.com/dhineshkarthick16/Non-Intrusive-Load-Monitoring"
 status: "Completed"
 ---
@@ -16,11 +25,11 @@ By eliminating the need for individual smart plugs per appliance or heavy cloud 
 
 ## ⚡ Key Features & Novelty
 
-* **Edge-Native Inference:** Executes a Scikit-Learn soft-voting ensemble model directly on an ESP32 in **<0.8 ms** per window.
-* **Dynamic Thermal Drift Offset:** Features real-time baseline subtraction ("SET AS NO LOAD") to eliminate zero-point sensor drift caused by ambient temperature changes.
-* **Low-Power Load Disambiguation:** Leverages higher-order statistical moments and harmonic variance to separate overlapping low-wattage SMPS and resistive loads (e.g., ~8.5W phone charger vs. ~17W incandescent bulb).
-* **Sub-$5 Hardware Overhead:** Built entirely on open-source, commodity components rather than expensive proprietary ARM Cortex platforms.
-* **Privacy-Preserving Telemetry:** Operates 100% locally with dual outputs: real-time appliance status on an I2C 16x2 LCD and remote monitoring via a Streamlit dashboard.
+- **Edge-Native Inference:** Executes a Scikit-Learn soft-voting ensemble model directly on an ESP32 in **&lt;0.8 ms** per window.
+- **Dynamic Thermal Drift Offset:** Features real-time baseline subtraction ("SET AS NO LOAD") to eliminate zero-point sensor drift caused by ambient temperature changes.
+- **Low-Power Load Disambiguation:** Leverages higher-order statistical moments and harmonic variance to separate overlapping low-wattage SMPS and resistive loads (e.g., ~8.5W phone charger vs. ~17W incandescent bulb).
+- **Sub-$5 Hardware Overhead:** Built entirely on open-source, commodity components rather than expensive proprietary ARM Cortex platforms.
+- **Privacy-Preserving Telemetry:** Operates 100% locally with dual outputs: real-time appliance status on an I2C 16x2 LCD and remote monitoring via a Streamlit dashboard.
 
 ## 🛠️ Hardware & Signal Chain
 
